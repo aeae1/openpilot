@@ -273,11 +273,11 @@ def torque_nn_load_alert(CP: car.CarParams, CS: car.CarState, sm: messaging.SubM
     alert_status = AlertStatus.userPrompt if fuzzy else AlertStatus.normal
     alert_size = AlertSize.mid if fuzzy else AlertSize.small
     audible_alert = AudibleAlert.prompt if fuzzy else AudibleAlert.none
-    return Alert(
-      "NN Lateral Controller Loaded",
-      alert_text_2,
-      alert_status, alert_size,
-      Priority.LOW, VisualAlert.none, audible_alert, 6.0)
+    #return Alert(
+    #  "NN Lateral Controller Loaded",
+    #  alert_text_2,
+    #  alert_status, alert_size,
+    #  Priority.LOW, VisualAlert.none, audible_alert, 6.0)
 
 # *** debug alerts ***
 
