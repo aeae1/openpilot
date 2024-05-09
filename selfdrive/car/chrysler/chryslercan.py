@@ -37,7 +37,7 @@ def create_lkas_hud(packer, CP, lkas_active, mads_enabled, hud_alert, hud_count,
   if hud_alert in (VisualAlert.ldw, VisualAlert.steerRequired):
     color = 4
     lines = 0
-    alerts = 7
+    alerts = 6
 
   values = {
     "LKAS_ICON_COLOR": color,
