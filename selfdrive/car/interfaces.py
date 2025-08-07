@@ -570,12 +570,25 @@ class CarInterfaceBase(ABC):
 
     return mads_enabled
 
-def get_sp_started_mads(self, cs_out, CS):
-    # If the user hasn’t pressed the main MADS/cruise button, MADS stays off.
-    if not self.mads_main_toggle:
+  def get_sp_started_mads(self, cs_out, CS):
+    if not cs_out.cruiseState.available and CS.out.cruiseState.available:
+      self.madsEnabledInit = False
+      self.madsEnabledInitPrev = False
+      return False
+    if not self.mads_main_toggle or self.prev_acc_mads_combo:
+      return CS.madsEnabled
+    if not self.madsEnabledInit and CS.madsEnabled:
+      self.madsEnabledInit = True
+      self.last_mads_init = time.monotonic()
+    if cs_out.gearShifter not in FORWARD_GEARS:
+      self.last_mads_init = time.monotonic()
+    if self.madsEnabledInit and (not self.madsEnabledInitPrev or cs_out.gearShifter not in FORWARD_GEARS):
+      if time.monotonic() < self.last_mads_init + 1.:
         return False
-    # Otherwise, keep the current MADS state; don’t reset on gear/seatbelt/door changes.
-    return CS.madsEnabled
+      self.madsEnabledInitPrev = True
+      return cs_out.cruiseState.available
+    else:
+      return CS.madsEnabled
 
   def get_sp_common_state(self, cs_out, CS, min_enable_speed_pcm=False, gear_allowed=True, gap_button=False):
     cs_out.cruiseState.enabled = CS.accEnabled if not self.CP.pcmCruise or not self.CP.pcmCruiseSpeed or min_enable_speed_pcm else \
@@ -591,16 +604,11 @@ def get_sp_started_mads(self, cs_out, CS):
 
     cs_out.belowLaneChangeSpeed = cs_out.vEgo < LANE_CHANGE_SPEED_MIN and self.below_speed_pause
 
-    # Modified to keep MADS latActive on even in Park/Reverse/Door/Seatbelt if MADS is enabled
-    gear_allowed = True  # Initially assume gear is allowed
+    if cs_out.gearShifter in [GearShifter.park, GearShifter.reverse] or cs_out.doorOpen or \
+      (cs_out.seatbeltUnlatched and cs_out.gearShifter != GearShifter.park):
+      gear_allowed = False
 
-    if not CS.madsEnabled:
-      if cs_out.gearShifter in [GearShifter.park, GearShifter.reverse] or \
-         cs_out.doorOpen or \
-         (cs_out.seatbeltUnlatched and cs_out.gearShifter != GearShifter.park):
-        gear_allowed = False
-
-    cs_out.latActive = gear_allowed or CS.madsEnabled
+    cs_out.latActive = gear_allowed
 
     if not CS.control_initialized:
       CS.control_initialized = True
