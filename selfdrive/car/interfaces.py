@@ -571,24 +571,20 @@ class CarInterfaceBase(ABC):
     return mads_enabled
 
   def get_sp_started_mads(self, cs_out, CS):
+    """
+    Keeps MADS enabled once activated, regardless of gear, seatbelt, or door state.
+    It will remain ready to resume steering as long as cruiseState remains available.
+    """
     if not cs_out.cruiseState.available and CS.out.cruiseState.available:
       self.madsEnabledInit = False
       self.madsEnabledInitPrev = False
       return False
+
     if not self.mads_main_toggle or self.prev_acc_mads_combo:
       return CS.madsEnabled
-    if not self.madsEnabledInit and CS.madsEnabled:
-      self.madsEnabledInit = True
-      self.last_mads_init = time.monotonic()
-    if cs_out.gearShifter not in FORWARD_GEARS:
-      self.last_mads_init = time.monotonic()
-    if self.madsEnabledInit and (not self.madsEnabledInitPrev or cs_out.gearShifter not in FORWARD_GEARS):
-      if time.monotonic() < self.last_mads_init + 1.:
-        return False
-      self.madsEnabledInitPrev = True
-      return cs_out.cruiseState.available
-    else:
-      return CS.madsEnabled
+
+    return CS.madsEnabled
+
 
   def get_sp_common_state(self, cs_out, CS, min_enable_speed_pcm=False, gear_allowed=True, gap_button=False):
     cs_out.cruiseState.enabled = CS.accEnabled if not self.CP.pcmCruise or not self.CP.pcmCruiseSpeed or min_enable_speed_pcm else \
@@ -604,11 +600,9 @@ class CarInterfaceBase(ABC):
 
     cs_out.belowLaneChangeSpeed = cs_out.vEgo < LANE_CHANGE_SPEED_MIN and self.below_speed_pause
 
-    if cs_out.gearShifter in [GearShifter.park, GearShifter.reverse] or cs_out.doorOpen or \
-      (cs_out.seatbeltUnlatched and cs_out.gearShifter != GearShifter.park):
-      gear_allowed = False
+    # Always allow lateral control, even with door open, unbelted, or not in Drive
+    cs_out.latActive = True
 
-    cs_out.latActive = gear_allowed
 
     if not CS.control_initialized:
       CS.control_initialized = True
