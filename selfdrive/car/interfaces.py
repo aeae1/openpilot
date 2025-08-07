@@ -236,11 +236,11 @@ class CarInterfaceBase(ABC):
     self.prev_gac_button = False
     self.gac_button_counter = 0
     self.reverse_dm_cam = self.param_s.get_bool("ReverseDmCam")
-    self._main_toggle = self.param_s.get_bool("CruiseMain")
+    self.mads_main_toggle = self.param_s.get_bool("MadsCruiseMain")
     self.lkas_toggle = self.param_s.get_bool("LkasToggle")
-    self.last__init = 0.
-    self.EnabledInit = False
-    self.EnabledInitPrev = False
+    self.last_mads_init = 0.
+    self.madsEnabledInit = False
+    self.madsEnabledInitPrev = False
 
     self.lat_torque_nn_model = None
     eps_firmware = str(next((fw.fwVersion for fw in CP.carFw if fw.ecu == "eps"), ""))
@@ -464,7 +464,7 @@ class CarInterfaceBase(ABC):
     if cs_out.cruiseState.nonAdaptive:
       events.add(EventName.wrongCruiseMode)
     if cs_out.brakeHoldActive and self.CP.openpilotLongitudinalControl:
-      if cs_out.Enabled:
+      if cs_out.madsEnabled:
         cs_out.disengageByBrake = True
       if cs_out.cruiseState.enabled:
         events.add(EventName.brakeHold)
@@ -522,13 +522,13 @@ class CarInterfaceBase(ABC):
   def sp_v_cruise_initialized(v_cruise):
     return v_cruise != V_CRUISE_UNSET
 
-  def get_acc_(self, cruiseState_enabled, acc_enabled, _enabled):
-    if self.acc__combo:
-      if not self.prev_acc__combo and (cruiseState_enabled or acc_enabled):
-        _enabled = True
-      self.prev_acc__combo = (cruiseState_enabled or acc_enabled)
+  def get_acc_mads(self, cruiseState_enabled, acc_enabled, mads_enabled):
+    if self.acc_mads_combo:
+      if not self.prev_acc_mads_combo and (cruiseState_enabled or acc_enabled):
+        mads_enabled = True
+      self.prev_acc_mads_combo = (cruiseState_enabled or acc_enabled)
 
-    return _enabled
+    return mads_enabled
 
   def get_sp_v_cruise_non_pcm_state(self, cs_out, acc_enabled, button_events, vCruise,
                                     enable_buttons=(ButtonType.accelCruise, ButtonType.decelCruise),
@@ -571,8 +571,10 @@ class CarInterfaceBase(ABC):
     return mads_enabled
 
 def get_sp_started_mads(self, cs_out, CS):
-    # Do not reset MADS based on cruise availability or gear/seatbelt/door.
-    # Leave the current state unchanged (it will be updated by ACC/MADS button logic elsewhere).
+    # If the user hasn’t pressed the main MADS/cruise button, MADS stays off.
+    if not self.mads_main_toggle:
+        return False
+    # Otherwise, keep the current MADS state; don’t reset on gear/seatbelt/door changes.
     return CS.madsEnabled
 
   def get_sp_common_state(self, cs_out, CS, min_enable_speed_pcm=False, gear_allowed=True, gap_button=False):
