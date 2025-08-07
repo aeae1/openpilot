@@ -289,7 +289,7 @@ class Controls:
     self.experimental_mode = False
     self.v_cruise_helper = VCruiseHelper(self.CP)
     self.recalibrating_seen = False
-    self.nn_alert_shown = False
+    self.nn_alert_shown = True
     self.enable_nnff = self.params.get_bool("NNFF")
 
     self.lane_change_set_timer = int(self.params.get("AutoLaneChangeTimer", encoding="utf8"))
