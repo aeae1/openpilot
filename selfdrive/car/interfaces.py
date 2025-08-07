@@ -604,11 +604,16 @@ class CarInterfaceBase(ABC):
 
     cs_out.belowLaneChangeSpeed = cs_out.vEgo < LANE_CHANGE_SPEED_MIN and self.below_speed_pause
 
-    if cs_out.gearShifter in [GearShifter.park, GearShifter.reverse] or cs_out.doorOpen or \
-      (cs_out.seatbeltUnlatched and cs_out.gearShifter != GearShifter.park):
-      gear_allowed = False
+    # Modified to keep MADS latActive on even in Park/Reverse/Door/Seatbelt if MADS is enabled
+    gear_allowed = True  # Initially assume gear is allowed
 
-    cs_out.latActive = gear_allowed
+    if not CS.madsEnabled:
+      if cs_out.gearShifter in [GearShifter.park, GearShifter.reverse] or \
+         cs_out.doorOpen or \
+         (cs_out.seatbeltUnlatched and cs_out.gearShifter != GearShifter.park):
+        gear_allowed = False
+
+    cs_out.latActive = gear_allowed or CS.madsEnabled
 
     if not CS.control_initialized:
       CS.control_initialized = True
