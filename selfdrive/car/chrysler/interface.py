@@ -131,6 +131,8 @@ class CarInterface(CarInterfaceBase):
           self.CS.madsEnabled = not self.CS.madsEnabled
           self.CS.lkas_disabled = not self.CS.lkas_disabled
         self.CS.madsEnabled = self.get_acc_mads(ret.cruiseState.enabled, self.CS.accEnabled, self.CS.madsEnabled)
+    else:
+      self.CS.madsEnabled = False
     self.CS.madsEnabled = self.get_sp_started_mads(ret, self.CS)
 
     if not self.CP.pcmCruise or (self.CP.pcmCruise and self.CP.minEnableSpeed > 0) or not self.CP.pcmCruiseSpeed:
