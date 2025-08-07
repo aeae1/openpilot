@@ -570,9 +570,11 @@ class CarInterfaceBase(ABC):
 
     return mads_enabled
 
-  def get_sp_started_mads(self, cs_out, CS):
-    # Do not reset MADS based on cruise availability or gear/seatbelt/door.
-    # Leave the current state unchanged (it will be updated by ACC/MADS button logic elsewhere).
+def get_sp_started_mads(self, cs_out, CS):
+    # If the user hasn’t pressed the main MADS/cruise button, MADS stays off.
+    if not self.mads_main_toggle:
+        return False
+    # Otherwise, keep the current MADS state; don’t reset on gear/seatbelt/door changes.
     return CS.madsEnabled
 
   def get_sp_common_state(self, cs_out, CS, min_enable_speed_pcm=False, gear_allowed=True, gap_button=False):
