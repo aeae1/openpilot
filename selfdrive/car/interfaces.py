@@ -570,25 +570,12 @@ class CarInterfaceBase(ABC):
 
     return mads_enabled
 
-  def get_sp_started_mads(self, cs_out, CS):
-    if not cs_out.cruiseState.available and CS.out.cruiseState.available:
-      self.madsEnabledInit = False
-      self.madsEnabledInitPrev = False
-      return False
-    if not self.mads_main_toggle or self.prev_acc_mads_combo:
-      return CS.madsEnabled
-    if not self.madsEnabledInit and CS.madsEnabled:
-      self.madsEnabledInit = True
-      self.last_mads_init = time.monotonic()
-    if cs_out.gearShifter not in FORWARD_GEARS:
-      self.last_mads_init = time.monotonic()
-    if self.madsEnabledInit and (not self.madsEnabledInitPrev or cs_out.gearShifter not in FORWARD_GEARS):
-      if time.monotonic() < self.last_mads_init + 1.:
+def get_sp_started_mads(self, cs_out, CS):
+    # If the user hasn’t pressed the main MADS/cruise button, MADS stays off.
+    if not self.mads_main_toggle:
         return False
-      self.madsEnabledInitPrev = True
-      return cs_out.cruiseState.available
-    else:
-      return CS.madsEnabled
+    # Otherwise, keep the current MADS state; don’t reset on gear/seatbelt/door changes.
+    return CS.madsEnabled
 
   def get_sp_common_state(self, cs_out, CS, min_enable_speed_pcm=False, gear_allowed=True, gap_button=False):
     cs_out.cruiseState.enabled = CS.accEnabled if not self.CP.pcmCruise or not self.CP.pcmCruiseSpeed or min_enable_speed_pcm else \
