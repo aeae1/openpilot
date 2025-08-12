@@ -109,7 +109,7 @@ class VCruiseHelper:
       self.v_cruise_kph = V_CRUISE_UNSET
       self.v_cruise_cluster_kph = V_CRUISE_UNSET
 
-  def updatev_cruise_non_pcm(self, CS, enabled, is_metric, reverse_acc):
+  def _updatev_cruise_non_pcm(self, CS, enabled, is_metric, reverse_acc):
       # handle button presses. TODO: this should be in state_control, but a decelCruise press
       # would have the effect of both enabling and changing speed is checked after the state transition
       if not enabled:
