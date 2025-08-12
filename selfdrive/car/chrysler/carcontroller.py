@@ -274,22 +274,28 @@ class CarController:
     return min(target_speed_kph, curve_speed)
 
   def get_button_control(self, CS, final_speed, v_cruise_kph_prev):
-    # Always operate in km/h (matches Chrysler ACC)
-    current_kph = int(CS.out.cruiseState.speed * CV.MS_TO_KPH + 0.5)
+    # Optional cap in kph
     cap_kph = int(min(final_speed, v_cruise_kph_prev) + 0.5) if (final_speed > 0 and v_cruise_kph_prev > 0) else 0
 
-    # Step: 5 km/h in metric, ~5 mph -> 8 km/h in imperial
-    step_kph = 5 if self.is_metric else 8
+    if not self.is_metric:
+      # Pick the next 5 mph stone in MPH first (53->55, 87->90), then convert once to kph
+      current_mph = int(CS.out.cruiseState.speed * CV.MS_TO_MPH + 0.5)
+      next_mph    = ((current_mph // 5) + 1) * 5
+      current_kph = int(round(current_mph * CV.MPH_TO_KPH))
+      target_kph  = int(round(next_mph   * CV.MPH_TO_KPH))   # 90 mph -> 145 kph
+    else:
+      # Metric: native +5 km/h
+      current_kph = int(CS.out.cruiseState.speed * CV.MS_TO_KPH + 0.5)
+      target_kph  = current_kph + 5
 
-    self.v_set_dis = current_kph
-    raw_target_kph = current_kph + step_kph
-    self.init_speed = min(raw_target_kph, cap_kph) if cap_kph > 0 else raw_target_kph
+    self.v_set_dis   = current_kph
+    self.init_speed  = min(target_kph, cap_kph) if cap_kph > 0 else target_kph
 
-    # Feed the existing state machine
+    # Feed existing button state machine
     self.target_speed = self.init_speed
-    self.speed_diff = self.target_speed - self.v_set_dis
-
+    self.speed_diff   = self.target_speed - self.v_set_dis
     return self.get_button_type(self.button_type)
+
 
 
   def curve_speed_hysteresis(self, cur_speed: float, hyst=(0.75 * CV.MPH_TO_KPH)):
