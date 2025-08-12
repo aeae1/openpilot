@@ -274,15 +274,23 @@ class CarController:
     return min(target_speed_kph, curve_speed)
 
   def get_button_control(self, CS, final_speed, v_cruise_kph_prev):
-    # Half-up rounding with tiny epsilon to avoid float edge cases that cause 85->89 skips
-    val_init = min(final_speed, v_cruise_kph_prev) * (CV.KPH_TO_MPH if not self.is_metric else 1)
-    self.init_speed = int(val_init + 0.5 + 1e-6)
+    # Always operate in km/h (matches Chrysler ACC)
+    current_kph = int(CS.out.cruiseState.speed * CV.MS_TO_KPH + 0.5)
+    cap_kph = int(min(final_speed, v_cruise_kph_prev) + 0.5) if (final_speed > 0 and v_cruise_kph_prev > 0) else 0
 
-    val_set = CS.out.cruiseState.speed * (CV.MS_TO_MPH if not self.is_metric else CV.MS_TO_KPH)
-    self.v_set_dis = int(val_set + 0.5 + 1e-6)
+    # Step: 5 km/h in metric, ~5 mph -> 8 km/h in imperial
+    step_kph = 5 if self.is_metric else 8
 
-    cruise_button = self.get_button_type(self.button_type)
-    return cruise_button
+    self.v_set_dis = current_kph
+    raw_target_kph = current_kph + step_kph
+    self.init_speed = min(raw_target_kph, cap_kph) if cap_kph > 0 else raw_target_kph
+
+    # Feed the existing state machine
+    self.target_speed = self.init_speed
+    self.speed_diff = self.target_speed - self.v_set_dis
+
+    return self.get_button_type(self.button_type)
+
 
   def curve_speed_hysteresis(self, cur_speed: float, hyst=(0.75 * CV.MPH_TO_KPH)):
     if cur_speed > self.steady_speed:
