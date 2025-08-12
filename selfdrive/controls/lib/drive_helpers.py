@@ -109,18 +109,16 @@ class VCruiseHelper:
       self.v_cruise_kph = V_CRUISE_UNSET
       self.v_cruise_cluster_kph = V_CRUISE_UNSET
 
-  def _update_v_cruise_non_pcm(self, CS, enabled, is_metric, reverse_acc):
+  def updatev_cruise_non_pcm(self, CS, enabled, is_metric, reverse_acc):
       # handle button presses. TODO: this should be in state_control, but a decelCruise press
       # would have the effect of both enabling and changing speed is checked after the state transition
       if not enabled:
         return
-
       if self.slc_state == SpeedLimitControlState.active and self.slc_state_prev == SpeedLimitControlState.preActive:
         return
-
       long_press = False
       button_type = None
-  
+    
       for b in CS.buttonEvents:
         if b.type.raw in self.button_timers and not b.pressed:
           if self.button_timers[b.type.raw] > CRUISE_LONG_PRESS:
@@ -133,57 +131,71 @@ class VCruiseHelper:
             button_type = k
             long_press = True
             break
-
+    
       if button_type is None:
         return
-
+    
       resume_button = ButtonType.accelCruise
       if not self.CP.pcmCruiseSpeed:
         if self.CP.carName == "chrysler":
           resume_button = ButtonType.resumeCruise
-
+    
       # Don't adjust speed when pressing resume to exit standstill
       cruise_standstill = self.button_change_states[button_type]["standstill"] or CS.cruiseState.standstill
       if button_type == resume_button and cruise_standstill:
         return
-
+    
       # Don't adjust speed if we've enabled since the button was depressed (some ports enable on rising edge)
       if not self.button_change_states[button_type]["enabled"]:
         return
-
-      # Imperial or metric increment
+    
+      # Set up increments based on metric/imperial
       if is_metric:
-        v_cruise_delta = 1.0
+        v_cruise_delta = 1.0  # 1 kph for short press
+        v_cruise_delta_mltplr = 10  # 10 kph for long press
       else:
-        v_cruise_delta = CV.MPH_TO_KPH  # exact 1.609344 conversion
-
-      pressed_value = 10.0 if (long_press ^ reverse_acc) else 1.0
+        v_cruise_delta = CV.MPH_TO_KPH  # Exact 1.609344 kph (= 1 mph) for short press
+        v_cruise_delta_mltplr = 5  # 5 mph for long press
+    
+      # Determine which increment to use based on press type and reverse_acc
+      if reverse_acc:
+        # Reversed: short press = large increment, long press = small increment
+        pressed_value = 1 if long_press else v_cruise_delta_mltplr
+        long_press_state = not long_press
+      else:
+        # Normal: short press = small increment, long press = large increment
+        pressed_value = v_cruise_delta_mltplr if long_press else 1
+        long_press_state = long_press
+    
       v_cruise_delta = v_cruise_delta * pressed_value
       dir_sign = CRUISE_INTERVAL_SIGN[button_type]
-
-      if long_press:
-        # q is in step units (grid indices)
-        q = self.v_cruise_kph / max(v_cruise_delta, 1e-6)
-        eps = 0.02  # ~2% of a step; covers 0.1 kph rounding
-
-        # If off-grid: snap to the next grid line in the press direction (no extra skip)
+    
+      if long_press_state:
+        # For long press, align to grid (multiples of v_cruise_delta)
+        # This ensures we snap to absolute multiples (e.g., 85, 90, 95 for 5 mph increments)
+        q = self.v_cruise_kph / v_cruise_delta
+        eps = 0.05  # tolerance for being "on grid"
+      
+        # Check if we're close enough to a grid line
         if abs(q - round(q)) > eps:
-          aligned_q = math.ceil(q) if dir_sign > 0 else math.floor(q)
-          self.v_cruise_kph = aligned_q * v_cruise_delta
+          # Not on grid: snap to next grid line in the button direction
+          if dir_sign > 0:
+            self.v_cruise_kph = math.ceil(q) * v_cruise_delta
+          else:
+            self.v_cruise_kph = math.floor(q) * v_cruise_delta
         else:
-          # Already on-grid: advance one full step
+          # Already on grid: advance one full step
           self.v_cruise_kph += dir_sign * v_cruise_delta
       else:
-        # Short press: simple +/- one small step as before
+        # Short press: simple increment
         self.v_cruise_kph += dir_sign * v_cruise_delta
-
-
-      # Clip to min/max and round for UI
-      self.v_cruise_kph = clip(round(self.v_cruise_kph, 1), self.v_cruise_min, V_CRUISE_MAX)
-
+    
       # If set is pressed while overriding, clip cruise speed to minimum of vEgo
       if CS.gasPressed and button_type in (ButtonType.decelCruise, ButtonType.setCruise):
         self.v_cruise_kph = max(self.v_cruise_kph, CS.vEgo * CV.MS_TO_KPH)
+    
+      # Clip to min/max and round for UI
+      self.v_cruise_kph = clip(round(self.v_cruise_kph, 1), self.v_cruise_min, V_CRUISE_MAX)
 
 
   def update_button_timers(self, CS, enabled):
