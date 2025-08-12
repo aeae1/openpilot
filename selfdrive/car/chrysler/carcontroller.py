@@ -274,29 +274,10 @@ class CarController:
     return min(target_speed_kph, curve_speed)
 
   def get_button_control(self, CS, final_speed, v_cruise_kph_prev):
-    # Optional cap in kph
-    cap_kph = int(min(final_speed, v_cruise_kph_prev) + 0.5) if (final_speed > 0 and v_cruise_kph_prev > 0) else 0
-
-    if not self.is_metric:
-      # Pick the next 5 mph stone in MPH first (53->55, 87->90), then convert once to kph
-      current_mph = int(CS.out.cruiseState.speed * CV.MS_TO_MPH + 0.5)
-      next_mph    = ((current_mph // 5) + 1) * 5
-      current_kph = int(round(current_mph * CV.MPH_TO_KPH))
-      target_kph  = int(round(next_mph   * CV.MPH_TO_KPH))   # 90 mph -> 145 kph
-    else:
-      # Metric: native +5 km/h
-      current_kph = int(CS.out.cruiseState.speed * CV.MS_TO_KPH + 0.5)
-      target_kph  = current_kph + 5
-
-    self.v_set_dis   = current_kph
-    self.init_speed  = min(target_kph, cap_kph) if cap_kph > 0 else target_kph
-
-    # Feed existing button state machine
-    self.target_speed = self.init_speed
-    self.speed_diff   = self.target_speed - self.v_set_dis
-    return self.get_button_type(self.button_type)
-
-
+    self.init_speed = round(min(final_speed, v_cruise_kph_prev) * (CV.KPH_TO_MPH if not self.is_metric else 1))
+    self.v_set_dis = round(CS.out.cruiseState.speed * (CV.MS_TO_MPH if not self.is_metric else CV.MS_TO_KPH))
+    cruise_button = self.get_button_type(self.button_type)
+    return cruise_button
 
   def curve_speed_hysteresis(self, cur_speed: float, hyst=(0.75 * CV.MPH_TO_KPH)):
     if cur_speed > self.steady_speed:
