@@ -108,95 +108,175 @@ class VCruiseHelper:
     else:
       self.v_cruise_kph = V_CRUISE_UNSET
       self.v_cruise_cluster_kph = V_CRUISE_UNSET
-
+  
   def _update_v_cruise_non_pcm(self, CS, enabled, is_metric, reverse_acc):
-      # handle button presses. TODO: this should be in state_control, but a decelCruise press
+      """
+      Updates cruise control speed based on button presses.
+      Handles both short presses (small increments) and long presses (large increments with grid snapping).
+      
+      Args:
+          CS: Car state containing button events and current vehicle status
+          enabled: Whether cruise control is currently enabled
+          is_metric: True for metric (kph), False for imperial (mph)
+          reverse_acc: Reverses button behavior (long press = small increment, short = large)
+      """
+      
+      # Early exit if cruise control is not enabled
+      # TODO: this should be in state_control, but a decelCruise press
       # would have the effect of both enabling and changing speed is checked after the state transition
       if not enabled:
         return
+      
+      # Don't process button presses when car is not in a forward driving gear
+      # This prevents errors when trying to adjust cruise speed while stopped
+      if CS.gearShifter in [car.CarState.GearShifter.park, 
+                            car.CarState.GearShifter.reverse,
+                            car.CarState.GearShifter.neutral]:
+        return
+      
+      # Also ignore if we're essentially stopped (under 0.5 m/s = 1.8 kph)
+      # unless we have a valid cruise speed already set (for resume at traffic lights)
+      if CS.vEgo < 0.5 and self.v_cruise_kph == V_CRUISE_UNSET:
+        return
+      
+      # Don't adjust speed during speed limit control state transition
       if self.slc_state == SpeedLimitControlState.active and self.slc_state_prev == SpeedLimitControlState.preActive:
         return
+      
+      # Initialize button detection variables
       long_press = False
       button_type = None
-    
+      
+      # Process button events to detect what type of press occurred
       for b in CS.buttonEvents:
         if b.type.raw in self.button_timers and not b.pressed:
+          # Button was released
           if self.button_timers[b.type.raw] > CRUISE_LONG_PRESS:
-            return  # end long press
+            # This was the end of a long press - don't process it again
+            return
+          # Short press detected - store the button type
           button_type = b.type.raw
           break
       else:
+        # No button release found, check for ongoing long presses
         for k in self.button_timers.keys():
+          # Check if button has been held long enough and we're at a long press interval
           if self.button_timers[k] and self.button_timers[k] % CRUISE_LONG_PRESS == 0:
             button_type = k
             long_press = True
             break
-    
+      
+      # Exit if no button action to process
       if button_type is None:
         return
-    
+      
+      # Determine which button is used for resume (varies by car model)
       resume_button = ButtonType.accelCruise
       if not self.CP.pcmCruiseSpeed:
         if self.CP.carName == "chrysler":
           resume_button = ButtonType.resumeCruise
-    
+      
       # Don't adjust speed when pressing resume to exit standstill
+      # This prevents unintended speed changes when resuming from a stop
       cruise_standstill = self.button_change_states[button_type]["standstill"] or CS.cruiseState.standstill
       if button_type == resume_button and cruise_standstill:
         return
-    
-      # Don't adjust speed if we've enabled since the button was depressed (some ports enable on rising edge)
+      
+      # Don't adjust speed if cruise was enabled since the button was first pressed
+      # Some car ports enable cruise on button rising edge, which could cause double action
       if not self.button_change_states[button_type]["enabled"]:
         return
-    
-      # Set up increments based on metric/imperial
+      
+      # ============ SPEED INCREMENT CALCULATION ============
+      
+      # Set up base increments and multipliers based on unit system
       if is_metric:
-        v_cruise_delta = 1.0  # 1 kph for short press
-        v_cruise_delta_mltplr = 10  # 10 kph for long press
+        # Metric mode: 1 kph for small increment
+        v_cruise_delta = 1.0
+        # Large increment: 10 kph (10x multiplier)
+        v_cruise_delta_mltplr = 10
       else:
-        v_cruise_delta = CV.MPH_TO_KPH  # Exact 1.609344 kph (= 1 mph) for short press
-        v_cruise_delta_mltplr = 5  # 5 mph for long press
-    
-      # Determine which increment to use based on press type and reverse_acc
+        # Imperial mode: 1 mph for small increment
+        # Use exact conversion factor to avoid rounding issues (1 mph = 1.609344 kph)
+        v_cruise_delta = CV.MPH_TO_KPH  # This is exactly 1.609344
+        # Large increment: 5 mph (5x multiplier) - standard for most cars
+        v_cruise_delta_mltplr = 5
+      
+      # Determine actual increment based on button press type and reverse_acc setting
       if reverse_acc:
-        # Reversed: short press = large increment, long press = small increment
+        # Reversed mode: short press gives large increment, long press gives small increment
+        # This is useful for users who want quick large adjustments with taps
         pressed_value = 1 if long_press else v_cruise_delta_mltplr
+        # For grid snapping logic, we need to know if we're doing a "large" adjustment
         long_press_state = not long_press
       else:
-        # Normal: short press = small increment, long press = large increment
+        # Normal mode: short press gives small increment, long press gives large increment
+        # This is the standard behavior most users expect
         pressed_value = v_cruise_delta_mltplr if long_press else 1
         long_press_state = long_press
-    
-      v_cruise_delta = v_cruise_delta * pressed_value
-      dir_sign = CRUISE_INTERVAL_SIGN[button_type]
-    
-      if long_press_state:
-        # For long press, align to grid (multiples of v_cruise_delta)
-        # This ensures we snap to absolute multiples (e.g., 85, 90, 95 for 5 mph increments)
-        q = self.v_cruise_kph / v_cruise_delta
-        eps = 0.05  # tolerance for being "on grid"
       
-        # Check if we're close enough to a grid line
+      # Calculate final speed increment
+      # For metric: 1 kph (short) or 10 kph (long)
+      # For imperial: 1.609344 kph (short) or 8.04672 kph (long, which equals 5 mph)
+      v_cruise_delta = v_cruise_delta * pressed_value
+      
+      # Get direction of adjustment (+1 for accel/resume, -1 for decel/set)
+      dir_sign = CRUISE_INTERVAL_SIGN[button_type]
+      
+      # ============ GRID SNAPPING LOGIC (for large increments only) ============
+      
+      if long_press_state:
+        # Large increment mode - need to handle grid alignment
+        # This ensures speed stays on nice round numbers (e.g., 80, 85, 90 mph)
+        
+        # Calculate position on the grid
+        # q represents how many "steps" we are from zero
+        # For example, at 90 mph (144.84 kph) with 5 mph steps (8.04672 kph):
+        # q = 144.84 / 8.04672 = 18.0 (exactly on grid)
+        q = self.v_cruise_kph / v_cruise_delta
+        
+        # Tolerance for determining if we're "on grid"
+        # 0.05 means we allow 5% deviation from exact grid alignment
+        # This handles floating-point precision issues from repeated calculations
+        eps = 0.05
+        
+        # Check if current speed is aligned to the grid
+        # round(q) gives nearest grid position, abs difference tells us how far off we are
         if abs(q - round(q)) > eps:
-          # Not on grid: snap to next grid line in the button direction
+          # We're NOT on a grid line - need to snap to the nearest grid line
+          # in the direction of the button press
+          
           if dir_sign > 0:
+            # Accelerating: snap to next higher grid line
+            # Example: 83 mph -> 85 mph when pressing accel
             self.v_cruise_kph = math.ceil(q) * v_cruise_delta
           else:
+            # Decelerating: snap to next lower grid line
+            # Example: 83 mph -> 80 mph when pressing decel
             self.v_cruise_kph = math.floor(q) * v_cruise_delta
         else:
-          # Already on grid: advance one full step
+          # We're already on a grid line (within tolerance)
+          # Just advance by one full step in the requested direction
+          # Example: 85 mph -> 90 mph (accel) or 85 mph -> 80 mph (decel)
           self.v_cruise_kph += dir_sign * v_cruise_delta
       else:
-        # Short press: simple increment
+        # Small increment mode - no grid snapping needed
+        # Just add/subtract the small increment
+        # This allows fine-tuning between grid lines
         self.v_cruise_kph += dir_sign * v_cruise_delta
-    
-      # If set is pressed while overriding, clip cruise speed to minimum of vEgo
+      
+      # ============ SAFETY FEATURES AND FINAL PROCESSING ============
+      
+      # Special handling when driver is pressing gas pedal (overriding cruise)
+      # If setting/reducing speed while overriding, don't go below current vehicle speed
+      # This prevents setting cruise to a much lower speed than you're currently traveling
       if CS.gasPressed and button_type in (ButtonType.decelCruise, ButtonType.setCruise):
         self.v_cruise_kph = max(self.v_cruise_kph, CS.vEgo * CV.MS_TO_KPH)
-    
-      # Clip to min/max and round for UI
+      
+      # Apply speed limits and round for display
+      # - round to 0.1 kph for clean display values
+      # - clip to minimum allowed speed (usually ~25 kph) and maximum (usually ~150 kph)
       self.v_cruise_kph = clip(round(self.v_cruise_kph, 1), self.v_cruise_min, V_CRUISE_MAX)
-
 
   def update_button_timers(self, CS, enabled):
     # increment timer for buttons still pressed
