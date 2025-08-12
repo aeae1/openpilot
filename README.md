@@ -1,3 +1,15 @@
+aeae1pilot: a fork of sunny pilot with a few changes.
+
+cruise speed limit effectively unlimited
+no warnings about seatbelt/door
+MADS stays on when you put it on. doesnt disable when car is placed in park
+fixed bug when speed limit adjusted by 5 mph above 85. would jump to 89, 94, losing correct 5mph increment.
+
+
+
+
+
+
 ![](https://user-images.githubusercontent.com/47793918/233812617-beab2e71-57b9-479e-8bff-c3931347ca40.png)
 
 Table of Contents
