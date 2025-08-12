@@ -162,19 +162,21 @@ class VCruiseHelper:
       dir_sign = CRUISE_INTERVAL_SIGN[button_type]
 
       if long_press:
-        eps = 0.05  # tolerance to handle float rounding
+        # q is in step units (grid indices)
         q = self.v_cruise_kph / max(v_cruise_delta, 1e-6)
+        eps = 0.02  # ~2% of a step; covers 0.1 kph rounding
 
-        # If off-grid, snap toward press direction AND advance one step in one go
-        if abs(q - round(q)) > (eps / max(v_cruise_delta, 1e-6)):
+        # If off-grid: snap to the next grid line in the press direction (no extra skip)
+        if abs(q - round(q)) > eps:
           aligned_q = math.ceil(q) if dir_sign > 0 else math.floor(q)
-          self.v_cruise_kph = (aligned_q + dir_sign) * v_cruise_delta
+          self.v_cruise_kph = aligned_q * v_cruise_delta
         else:
-          # Already on grid: just advance one step
+          # Already on-grid: advance one full step
           self.v_cruise_kph += dir_sign * v_cruise_delta
       else:
-        # Short press: simple increment
+        # Short press: simple +/- one small step as before
         self.v_cruise_kph += dir_sign * v_cruise_delta
+
 
       # Clip to min/max and round for UI
       self.v_cruise_kph = clip(round(self.v_cruise_kph, 1), self.v_cruise_min, V_CRUISE_MAX)
