@@ -110,75 +110,79 @@ class VCruiseHelper:
       self.v_cruise_cluster_kph = V_CRUISE_UNSET
 
   def _update_v_cruise_non_pcm(self, CS, enabled, is_metric, reverse_acc):
-    # handle button presses. TODO: this should be in state_control, but a decelCruise press
-    # would have the effect of both enabling and changing speed is checked after the state transition
-    if not enabled:
-      return
+      # handle button presses. TODO: this should be in state_control, but a decelCruise press
+      # would have the effect of both enabling and changing speed is checked after the state transition
+      if not enabled:
+        return
 
-    if self.slc_state == SpeedLimitControlState.active and self.slc_state_prev == SpeedLimitControlState.preActive:
-      return
+      if self.slc_state == SpeedLimitControlState.active and self.slc_state_prev == SpeedLimitControlState.preActive:
+        return
 
-    long_press = False
-    button_type = None
-
-    v_cruise_delta = 1. if is_metric else IMPERIAL_INCREMENT
-    v_cruise_delta_mltplr = 10 if is_metric else 5
-
-    for b in CS.buttonEvents:
-      if b.type.raw in self.button_timers and not b.pressed:
-        if self.button_timers[b.type.raw] > CRUISE_LONG_PRESS:
-          return  # end long press
-        button_type = b.type.raw
-        break
-    else:
-      for k in self.button_timers.keys():
-        if self.button_timers[k] and self.button_timers[k] % CRUISE_LONG_PRESS == 0:
-          button_type = k
-          long_press = True
+      long_press = False
+      button_type = None
+  
+      for b in CS.buttonEvents:
+        if b.type.raw in self.button_timers and not b.pressed:
+          if self.button_timers[b.type.raw] > CRUISE_LONG_PRESS:
+            return  # end long press
+          button_type = b.type.raw
           break
-
-    if button_type is None:
-      return
-
-    resume_button = ButtonType.accelCruise
-    if not self.CP.pcmCruiseSpeed:
-      if self.CP.carName == "chrysler":
-        resume_button = ButtonType.resumeCruise
-
-    # Don't adjust speed when pressing resume to exit standstill
-    cruise_standstill = self.button_change_states[button_type]["standstill"] or CS.cruiseState.standstill
-    if button_type == resume_button and cruise_standstill:
-      return
-
-    # Don't adjust speed if we've enabled since the button was depressed (some ports enable on rising edge)
-    if not self.button_change_states[button_type]["enabled"]:
-      return
-
-    pressed_value = (1 if long_press else v_cruise_delta_mltplr) if reverse_acc else (v_cruise_delta_mltplr if long_press else 1)
-    long_press_state = not long_press if reverse_acc else long_press
-    v_cruise_delta = v_cruise_delta * pressed_value
-
-    # tolerance matched to display rounding (we round to 0.1 kph later)
-    eps = 0.05 if long_press_state else 1e-6
-
-    if long_press_state:
-      q = self.v_cruise_kph / v_cruise_delta
-      # If we're not close to an integer grid line, snap toward the intended direction
-      if abs(q - round(q)) > (eps / max(v_cruise_delta, 1e-6)):
-        self.v_cruise_kph = CRUISE_NEAREST_FUNC[button_type](q) * v_cruise_delta
       else:
-        # Aligned (within tolerance): advance one full step
-        self.v_cruise_kph += v_cruise_delta * CRUISE_INTERVAL_SIGN[button_type]
-    else:
-      # short press: simple +/− one small step as before
-      self.v_cruise_kph += v_cruise_delta * CRUISE_INTERVAL_SIGN[button_type]
+        for k in self.button_timers.keys():
+          if self.button_timers[k] and self.button_timers[k] % CRUISE_LONG_PRESS == 0:
+            button_type = k
+            long_press = True
+            break
 
+      if button_type is None:
+        return
 
-    # If set is pressed while overriding, clip cruise speed to minimum of vEgo
-    if CS.gasPressed and button_type in (ButtonType.decelCruise, ButtonType.setCruise):
-      self.v_cruise_kph = max(self.v_cruise_kph, CS.vEgo * CV.MS_TO_KPH)
+      resume_button = ButtonType.accelCruise
+      if not self.CP.pcmCruiseSpeed:
+        if self.CP.carName == "chrysler":
+          resume_button = ButtonType.resumeCruise
 
-    self.v_cruise_kph = clip(round(self.v_cruise_kph, 1), self.v_cruise_min, V_CRUISE_MAX)
+      # Don't adjust speed when pressing resume to exit standstill
+      cruise_standstill = self.button_change_states[button_type]["standstill"] or CS.cruiseState.standstill
+      if button_type == resume_button and cruise_standstill:
+        return
+
+      # Don't adjust speed if we've enabled since the button was depressed (some ports enable on rising edge)
+      if not self.button_change_states[button_type]["enabled"]:
+        return
+
+      # Imperial or metric increment
+      if is_metric:
+        v_cruise_delta = 1.0
+      else:
+        v_cruise_delta = CV.MPH_TO_KPH  # exact 1.609344 conversion
+
+      pressed_value = 10.0 if (long_press ^ reverse_acc) else 1.0
+      v_cruise_delta = v_cruise_delta * pressed_value
+      dir_sign = CRUISE_INTERVAL_SIGN[button_type]
+
+      if long_press:
+        eps = 0.05  # tolerance to handle float rounding
+        q = self.v_cruise_kph / max(v_cruise_delta, 1e-6)
+
+        # If off-grid, snap toward press direction AND advance one step in one go
+        if abs(q - round(q)) > (eps / max(v_cruise_delta, 1e-6)):
+          aligned_q = math.ceil(q) if dir_sign > 0 else math.floor(q)
+          self.v_cruise_kph = (aligned_q + dir_sign) * v_cruise_delta
+        else:
+          # Already on grid: just advance one step
+          self.v_cruise_kph += dir_sign * v_cruise_delta
+      else:
+        # Short press: simple increment
+        self.v_cruise_kph += dir_sign * v_cruise_delta
+
+      # Clip to min/max and round for UI
+      self.v_cruise_kph = clip(round(self.v_cruise_kph, 1), self.v_cruise_min, V_CRUISE_MAX)
+
+      # If set is pressed while overriding, clip cruise speed to minimum of vEgo
+      if CS.gasPressed and button_type in (ButtonType.decelCruise, ButtonType.setCruise):
+        self.v_cruise_kph = max(self.v_cruise_kph, CS.vEgo * CV.MS_TO_KPH)
+
 
   def update_button_timers(self, CS, enabled):
     # increment timer for buttons still pressed
