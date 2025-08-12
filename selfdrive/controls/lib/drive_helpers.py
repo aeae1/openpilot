@@ -15,7 +15,7 @@ V_CRUISE_MAX = 161
 V_CRUISE_UNSET = 255
 V_CRUISE_INITIAL = 40
 V_CRUISE_INITIAL_EXPERIMENTAL_MODE = 105
-IMPERIAL_INCREMENT = 1.6  # should be CV.MPH_TO_KPH, but this causes rounding errors
+IMPERIAL_INCREMENT = CV.MPH_TO_KPH  # should be CV.MPH_TO_KPH, but this causes rounding errors
 
 MIN_SPEED = 1.0
 CONTROL_N = 17
@@ -157,10 +157,22 @@ class VCruiseHelper:
     pressed_value = (1 if long_press else v_cruise_delta_mltplr) if reverse_acc else (v_cruise_delta_mltplr if long_press else 1)
     long_press_state = not long_press if reverse_acc else long_press
     v_cruise_delta = v_cruise_delta * pressed_value
-    if long_press_state and self.v_cruise_kph % v_cruise_delta != 0:  # partial interval
-      self.v_cruise_kph = CRUISE_NEAREST_FUNC[button_type](self.v_cruise_kph / v_cruise_delta) * v_cruise_delta
+
+    # tolerance matched to display rounding (we round to 0.1 kph later)
+    eps = 0.05 if long_press_state else 1e-6
+
+    if long_press_state:
+      q = self.v_cruise_kph / v_cruise_delta
+      # If we're not close to an integer grid line, snap toward the intended direction
+      if abs(q - round(q)) > (eps / max(v_cruise_delta, 1e-6)):
+        self.v_cruise_kph = CRUISE_NEAREST_FUNC[button_type](q) * v_cruise_delta
+      else:
+        # Aligned (within tolerance): advance one full step
+        self.v_cruise_kph += v_cruise_delta * CRUISE_INTERVAL_SIGN[button_type]
     else:
+      # short press: simple +/− one small step as before
       self.v_cruise_kph += v_cruise_delta * CRUISE_INTERVAL_SIGN[button_type]
+
 
     # If set is pressed while overriding, clip cruise speed to minimum of vEgo
     if CS.gasPressed and button_type in (ButtonType.decelCruise, ButtonType.setCruise):
