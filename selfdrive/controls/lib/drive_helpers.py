@@ -127,18 +127,6 @@ class VCruiseHelper:
       if not enabled:
         return
       
-      # Don't process button presses when car is not in a forward driving gear
-      # This prevents errors when trying to adjust cruise speed while stopped
-      if CS.gearShifter in [car.CarState.GearShifter.park, 
-                            car.CarState.GearShifter.reverse,
-                            car.CarState.GearShifter.neutral]:
-        return
-      
-      # Also ignore if we're essentially stopped (under 0.5 m/s = 1.8 kph)
-      # unless we have a valid cruise speed already set (for resume at traffic lights)
-      if CS.vEgo < 0.5 and self.v_cruise_kph == V_CRUISE_UNSET:
-        return
-      
       # Don't adjust speed during speed limit control state transition
       if self.slc_state == SpeedLimitControlState.active and self.slc_state_prev == SpeedLimitControlState.preActive:
         return
@@ -168,6 +156,19 @@ class VCruiseHelper:
       
       # Exit if no button action to process
       if button_type is None:
+        return
+      
+      # Don't process speed adjustments when car is not in a forward driving gear
+      # This prevents errors when trying to adjust cruise speed while stopped
+      # Note: This is AFTER button detection so it only blocks speed changes, not enable/disable
+      if CS.gearShifter in [car.CarState.GearShifter.park, 
+                            car.CarState.GearShifter.reverse,
+                            car.CarState.GearShifter.neutral]:
+        return
+      
+      # Also ignore speed adjustments if we're essentially stopped (under 0.5 m/s = 1.8 kph)
+      # unless we have a valid cruise speed already set (for resume at traffic lights)
+      if CS.vEgo < 0.5 and self.v_cruise_kph == V_CRUISE_UNSET:
         return
       
       # Determine which button is used for resume (varies by car model)
@@ -277,6 +278,7 @@ class VCruiseHelper:
       # - round to 0.1 kph for clean display values
       # - clip to minimum allowed speed (usually ~25 kph) and maximum (usually ~150 kph)
       self.v_cruise_kph = clip(round(self.v_cruise_kph, 1), self.v_cruise_min, V_CRUISE_MAX)
+
 
   def update_button_timers(self, CS, enabled):
     # increment timer for buttons still pressed
