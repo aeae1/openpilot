@@ -1,4 +1,4 @@
-# aeae1pilot — my sunnypilot setup
+# aeae1pilot: my sunnypilot setup
 
 This is my personal sunnypilot fork for my **2025 Chrysler Pacifica Hybrid and comma 3X**. I'm really happy with how it drives. I'm running **Blue Diamond v2**, a **Laneful** profile, and **NNLC**, with my camera mounted off to the side and the legacy **camera offset set to −20 cm**. I like the camera there, and I like the behavior I've ended up with.
 
@@ -6,7 +6,7 @@ The setup is pretty much frozen in time, and I'm fine with that. I'm curious whe
 
 **The branch I actually use is [`release-c3`](https://github.com/aeae1/openpilot/tree/release-c3).** GitHub's default branch, `master`, is a different historical source tree. This README describes `release-c3` even when you're reading it on `master`; the surrounding code on `master` doesn't contain the same personal changes.
 
-I made the original changes with a mix of AI help and manual work, with plenty of edits and reversions along the way. This README is here so future me—and anyone else looking through the repo—can work out what's actually in it. It was checked against the final code diff, commit history, and my settings photos on **September 28, 2026**. That was a documentation review, not a new hardware test or a full export of my comma.
+I made the original changes with a mix of AI help and manual work, with plenty of edits and reversions along the way. This README is here so future me and anyone else looking through the repo can work out what's actually in it. It was checked against the final code diff and commit history. That was a documentation review, not a new hardware test or a full export of my comma.
 
 ## What I'm running
 
@@ -16,7 +16,7 @@ I made the original changes with a mix of AI help and manual work, with plenty o
 | Software version | `0.9.6.1-release` |
 | Last driving-code commit before this documentation | [`f4fbb5bc628da0f363e83c2b7c80e3793327eed3`](https://github.com/aeae1/openpilot/tree/f4fbb5bc628da0f363e83c2b7c80e3793327eed3), August 13, 2025 |
 | sunnypilot release baseline for the personal diff | [`e8de7d3fcd81d4d31c62ee2db53ebf76b7582ca8`](https://github.com/aeae1/openpilot/tree/e8de7d3fcd81d4d31c62ee2db53ebf76b7582ca8), `sunnypilot v0.9.6.1`, February 28, 2024 |
-| Selected driving model shown in photos | **Blue Diamond v2 (December 12, 2023)**, `NLP+BDv2`, generation 1 |
+| Selected driving model | **Blue Diamond v2 (December 12, 2023)**, `NLP+BDv2`, generation 1 |
 | OS version requested by this deployment's `launch_env.sh` | **AGNOS 9.6**; the device's installed OS was not independently read |
 | My vehicle | **2025 Chrysler Pacifica Hybrid** |
 | Historical vehicle label displayed by this build | `Chrysler Pacifica Hybrid 2019–23` |
@@ -38,7 +38,7 @@ The exact archive commit is [`70f4db9d01be4ceb3706c508484055f615e0fa0a`](https:/
 | `supercombo-blue-diamond-v2.thneed` | 49,235,840 bytes |
 | `navmodel_q_gen1.dlc` | 3,630,942 bytes |
 | `supercombo_metadata_gen1.pkl` | 727 bytes |
-| **Total model package** | **52,867,509 bytes — 52.87 MB / 50.42 MiB** |
+| **Total model package** | **52,867,509 bytes (52.87 MB / 50.42 MiB)** |
 
 The archive branch descends directly from `f4fbb5b` and preserves its tracked files unchanged, adding only the backup folder. This retains the deployment's code and prebuilt dependencies as well as the custom model package. The model payloads are real Git blobs, not external-download links or LFS pointers.
 
@@ -123,7 +123,7 @@ The UI describes a decreasing camera-offset value as biasing the car farther lef
 
 ## My current settings
 
-These are my settings as transcribed from the photos I supplied for this review. **They haven't been made the installation defaults yet**, and the photos aren't a complete parameter export. Where a photo was unclear, that's called out rather than guessed. Device identifiers, network details, credentials, and unrelated car-brand toggles are left out.
+These are my current settings. **They haven't been made the installation defaults yet.** A parameter export is still needed to confirm the complete profile. Device identifiers, network details, credentials, and unrelated car-brand toggles are left out.
 
 ### Driving and lane behavior
 
@@ -132,12 +132,12 @@ These are my settings as transcribed from the photos I supplied for this review.
 | Driving model | Blue Diamond v2 |
 | Dynamic Lane Profile | Laneful |
 | Custom Offsets | On |
-| Camera Offset — Laneful Only | −20 cm |
+| Camera Offset – Laneful Only | −20 cm |
 | Path Offset | 0 cm |
 | MADS | On |
 | Toggle MADS with Cruise Main | On |
 | Enable ACC+MADS with RES+/SET− | Off |
-| Steering Mode After Braking | “Remain Active” appears selected; dimmed photo, parameter export needed for definitive confirmation |
+| Steering Mode After Braking | “Remain Active” appears selected; stored parameter still needs confirmation |
 | Disengage on accelerator | Off |
 | NNLC | On |
 | Enforce Torque Lateral Control | Off |
