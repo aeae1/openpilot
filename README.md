@@ -95,7 +95,9 @@ In [`selfdrive/controls/controlsd.py`](https://github.com/aeae1/openpilot/blob/f
 
 ### 5. Fork-origin recognition
 
-In [`system/version.py`](https://github.com/aeae1/openpilot/blob/f4fbb5bc628da0f363e83c2b7c80e3793327eed3/system/version.py), `github.com/aeae1/openpilot` was added to `is_comma_remote()`'s recognized-origin list. This changes the code's classification of the remote. It does not make the fork an official comma/sunnypilot build or certify that it was tested.
+I added `github.com/aeae1/openpilot` to `is_comma_remote()`'s recognized-origin list in [`system/version.py`](https://github.com/aeae1/openpilot/blob/f4fbb5bc628da0f363e83c2b7c80e3793327eed3/system/version.py) to get rid of the annoying **“WARNING: This branch is not tested”** startup alert on my `release-c3` build.
+
+The startup check looks at both the repo origin and the branch name. `release-c3` is already in the recognized release-branch list, so adding my repo origin lets this build use the normal startup alert. The branch-name check still applies; this doesn't mark every branch in my fork as tested.
 
 ### Scope of the final changes
 
