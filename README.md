@@ -1,460 +1,238 @@
-![](https://user-images.githubusercontent.com/47793918/233812617-beab2e71-57b9-479e-8bff-c3931347ca40.png)
+# aeae1pilot — a personal sunnypilot setup
 
-Table of Contents
-=======================
+This repository preserves a personal sunnypilot setup used with a **2025 Chrysler Pacifica Hybrid and a comma 3X**. The owner likes its current driving behavior: **Blue Diamond v2**, a **Laneful** profile, **NNLC**, and a side-mounted camera using the legacy **−20 cm camera offset**. Preserving that behavior is the project's priority.
 
-* [Join our Discord](#-join-our-discord)
-* [What is sunnypilot?](#-what-is-sunnypilot)
-* [Running in a car](#-running-on-a-dedicated-device-in-a-car)
-* [Read Before Installing](#-read-before-installing)
-* [Prohibited Safety Modifications](#-prohibited-safety-modifications)
-* [Installation](#-installation)
-* [Highlight Features](#-highlight-features)
-* [Driving Enhancements](#-driving-enhancements)
-* [Branch Definitions](#-branch-definitions)
-* [Recommended Branches](#-recommended-branches)
-* [How-To's](#-How-Tos)
-* [Pull Requests](#-Pull-Requests)
-* [Special Thanks](#-special-thanks)
-* [User Data](#-user-data)
-* [Licensing](#licensing)
-* [Donate](#-support-sunnypilot)
+The active personal deployment is **[`release-c3`](https://github.com/aeae1/openpilot/tree/release-c3)**. GitHub's default branch, `master`, is a different historical source tree. **This README documents `release-c3`, including when viewed on `master`; do not assume the surrounding code on `master` implements these personal changes.**
 
----
+This documentation was audited on **September 28, 2026**, using the final code diff, commit history, and the owner's settings photos. It describes the resulting code, including changes that the former short README omitted. It does not imply a new hardware test or an export of the device's complete state.
 
-<details><summary><h3>💭 Join our Discord</h3></summary>
+## Versions and preserved baseline
 
----
+| Item | Recorded value |
+|---|---|
+| Personal deployment branch | `release-c3` |
+| Software version | `0.9.6.1-release` |
+| Last driving-code commit before this documentation | [`f4fbb5bc628da0f363e83c2b7c80e3793327eed3`](https://github.com/aeae1/openpilot/tree/f4fbb5bc628da0f363e83c2b7c80e3793327eed3), August 13, 2025 |
+| sunnypilot release baseline for the personal diff | [`e8de7d3fcd81d4d31c62ee2db53ebf76b7582ca8`](https://github.com/aeae1/openpilot/tree/e8de7d3fcd81d4d31c62ee2db53ebf76b7582ca8), `sunnypilot v0.9.6.1`, February 28, 2024 |
+| Selected driving model shown in photos | **Blue Diamond v2 (December 12, 2023)**, `NLP+BDv2`, generation 1 |
+| OS version requested by this deployment's `launch_env.sh` | **AGNOS 9.6**; the device's installed OS was not independently read |
+| Vehicle used by the owner | **2025 Chrysler Pacifica Hybrid** |
+| Historical vehicle label displayed by this build | `Chrysler Pacifica Hybrid 2019–23` |
+| Hardware | **comma 3X** |
+| Default `master` branch before this documentation | `c53c90f7fac73a9ba7dad81bf9c349535651bf6d`, May 8, 2024, version `0.9.7.0`; not the personal deployment |
 
-Join the official sunnypilot Discord server to stay up to date with all the latest features and be a part of shaping the future of sunnypilot!
-* https://discord.gg/sunnypilot
+The software, model, and personal edits have different dates. A 2025 commit does not make the underlying release or selected driving model a 2025 version. The old vehicle label is retained from the platform definition; it is not a claim that this fork has a separately validated 2025 vehicle port.
 
-  ![](https://dcbadge.vercel.app/api/server/wRW3meAgtx?style=flat) ![Discord Shield](https://discordapp.com/api/guilds/880416502577266699/widget.png?style=shield)
+The deployment includes `prebuilt`, a compiled `selfdrive/ui/ui`, compiled model runners, and other release binaries. Much of the matching C++ UI source is absent. Editing the unrelated `master` tree is not a reliable way to rebuild this exact UI.
 
-</details>
+## Blue Diamond v2 backup
 
-<details><summary><h3>🌞 What is sunnypilot?</h3></summary>
+The **[Blue Diamond v2 archive](https://github.com/aeae1/openpilot/tree/backup/blue-diamond-v2-2026-09-28/backups/blue-diamond-v2)** preserves the complete three-file runtime package, its original catalog, SHA-256 checksums, and a compatibility manifest.
 
----
+The exact archive commit is [`70f4db9d01be4ceb3706c508484055f615e0fa0a`](https://github.com/aeae1/openpilot/tree/70f4db9d01be4ceb3706c508484055f615e0fa0a/backups/blue-diamond-v2).
 
-[sunnypilot](https://github.com/sunnyhaibin/sunnypilot) is a fork of comma.ai's openpilot, an open source driver assistance system. sunnypilot offers the user a unique driving experience for over 250+ supported car makes and models with modified behaviors of driving assist engagements. sunnypilot complies with comma.ai's safety rules as accurately as possible.
+| Payload | Size |
+|---|---:|
+| `supercombo-blue-diamond-v2.thneed` | 49,235,840 bytes |
+| `navmodel_q_gen1.dlc` | 3,630,942 bytes |
+| `supercombo_metadata_gen1.pkl` | 727 bytes |
+| **Total model package** | **52,867,509 bytes — 52.87 MB / 50.42 MiB** |
 
-</details>
+The archive branch descends directly from `f4fbb5b` and preserves its tracked files unchanged, adding only the backup folder. This retains the deployment's code and prebuilt dependencies as well as the custom model package. The model payloads are real Git blobs, not external-download links or LFS pointers.
 
-<details><summary><h3>🚘 Running on a dedicated device in a car</h3></summary>
+All three downloaded payloads matched sunnypilot's published SHA-256 checksums. This establishes a verified copy of the published Blue Diamond v2 package. **The installed files on the owner's comma have not been read or hash-compared.** The archive is not a device disk image or model training checkpoint. See its README and `manifest.json` for verification and restoration boundaries.
 
----
+## Personal code modifications
 
-To use sunnypilot in a car, you need the following:
-* A supported device to run this software
-    * a [comma three](https://comma.ai/shop/products/three), or
-    * a comma two (only with older versions below 0.8.13)
-* This software
-* One of [the 250+ supported cars](https://github.com/commaai/openpilot/blob/master/docs/CARS.md). We support Honda, Toyota, Hyundai, Nissan, Kia, Chrysler, Lexus, Acura, Audi, VW, Ford and more. If your car is not supported but has adaptive cruise control and lane-keeping assist, it's likely able to run sunnypilot.
-* A [car harness](https://comma.ai/shop/products/car-harness) to connect to your car
+The authoritative comparison is [`e8de7d3…f4fbb5b`](https://github.com/aeae1/openpilot/compare/e8de7d3fcd81d4d31c62ee2db53ebf76b7582ca8...f4fbb5bc628da0f363e83c2b7c80e3793327eed3). Before the documentation update, the final net diff affected five runtime Python files and the README. Earlier experiments that were subsequently reverted are not additional active features.
 
-Detailed instructions for [how to mount the device in a car](https://comma.ai/setup).
+### 1. Cruise-speed ceiling and button increments
 
-</details>
+In [`selfdrive/controls/lib/drive_helpers.py`](https://github.com/aeae1/openpilot/blob/f4fbb5bc628da0f363e83c2b7c80e3793327eed3/selfdrive/controls/lib/drive_helpers.py):
 
-<details><summary><h3>🚨 Read Before Installing</h3></summary>
+- `V_CRUISE_MAX` is **161 km/h**, raised from 145 km/h. That is approximately **100 mph**, not an unlimited cruise speed. This is the software setpoint ceiling; it does not prove that factory ACC accepts every requested speed.
+- Imperial increments use the exact `CV.MPH_TO_KPH` conversion, **1.609344**, instead of 1.6.
+- Small adjustments are **1 mph**; large adjustments are **5 mph**. Metric adjustments remain 1 km/h and 10 km/h.
+- Large adjustments snap toward the next interval boundary when off-grid. An interval-relative tolerance handles values already near a boundary. This is the final implementation of the owner's “85 → 89 / 94” correction.
+- With the owner's **ACC Long Press Reverse ON**, a short press requests the large adjustment and a long press requests the small adjustment.
+- Speed changes are ignored in Park, Reverse, and Neutral. The code also ignores an adjustment below 0.5 m/s when the setpoint is unset, preserves the setpoint when resuming from cruise standstill, and avoids treating a button press that enabled cruise as another adjustment.
+- The existing gas-override lower bound and final min/max clipping remain.
 
----
+These modifications are in the non-PCM-speed helper. The inherited **Custom Stock Longitudinal** feature sets `pcmCruiseSpeed=False` on this supported Chrysler configuration, which makes this helper relevant even though the vehicle still uses factory ACC for longitudinal actuation.
 
-It is recommended to read this **entire page** before proceeding. This will ensure that you fully understand each added feature on sunnypilot, and you are selecting the right branch for your car to have the best driving experience.
+### 2. MADS persistence and lateral eligibility
 
-This is a fork of [comma.ai's openpilot](https://github.com/commaai/openpilot). By installing this software, you accept all responsibility for anything that might occur while you use it. All contributors to sunnypilot are not liable. ❗<ins>**Use at your own risk.**</ins>❗
+In [`selfdrive/car/interfaces.py`](https://github.com/aeae1/openpilot/blob/f4fbb5bc628da0f363e83c2b7c80e3793327eed3/selfdrive/car/interfaces.py):
 
-</details>
+- `get_sp_started_mads()` returns the current `CS.madsEnabled` state instead of the old forward-gear/one-second rearming sequence.
+- When cruise availability transitions from available to unavailable, the method clears its initialization flags and returns `False`.
+- `get_sp_common_state()` no longer uses the original gear, open-door, and seatbelt checks to set `gear_allowed=False`. It assigns **`cs_out.latActive=True`** instead.
 
-<details><summary><h3>⛔ Prohibited Safety Modifications</h3></summary>
+The owner's goal was to keep the chosen MADS state through parking and related interruptions. **The implementation changes lateral eligibility as well as retaining the selection.** Describing it solely as “remember the toggle” would be incomplete. These edits are in the shared interface, not a Chrysler-only wrapper.
 
----
+This assignment does not mean steering is physically active at every speed or in every situation. `controlsd.py` still combines it with MADS state, minimum speed/standstill, brake behavior, steering faults, calibration, and other conditions. The Chrysler controller and panda also have their own constraints.
 
-All [official sunnypilot branches](https://github.com/sunnyhaibin/sunnypilot/branches) strictly adhere to [comma.ai's safety policy](https://github.com/commaai/openpilot/blob/master/docs/SAFETY.md). Any changes that go against this policy will result in your fork and your device being banned from both comma.ai and sunnypilot channels.
+### 3. Door, seatbelt, stability-control, and high-speed events
 
-The following changes are a **VIOLATION** of this policy and **ARE NOT** included in any sunnypilot branches:
-* Driver Monitoring:
-    * ❌ "Nerfing" or reducing monitoring parameters.
-* Panda safety:
-    * ❌ No preventing disengaging of <ins>**LONGITUDINAL CONTROL**</ins> (acceleration/brake) on brake pedal press.
-    * ❌ No auto re-engaging of <ins>**LONGITUDINAL CONTROL**</ins> (acceleration/brake) on brake pedal release.
-    * ❌ No disengaging on ACC MAIN in OFF state.
+In [`selfdrive/controls/lib/events.py`](https://github.com/aeae1/openpilot/blob/f4fbb5bc628da0f363e83c2b7c80e3793327eed3/selfdrive/controls/lib/events.py):
 
-</details>
+| Event | Personal change | What remains in that event definition |
+|---|---|---|
+| `doorOpen` | `SOFT_DISABLE` entry commented out | `NO_ENTRY` alert |
+| `seatbeltNotLatched` | `SOFT_DISABLE` entry commented out | `NO_ENTRY` alert |
+| `espDisabled` | `SOFT_DISABLE` entry commented out | `NO_ENTRY` alert |
+| `speedTooHigh` | `WARNING` and `NO_ENTRY` entries commented out | Neither of those entries is active |
 
+The former README's “no warnings about seatbelt/door” was too broad: the no-entry definitions remain. These are changes to event handling, including disengagement/entry behavior, rather than just a quieter visual theme. The high-speed event change does not alter the model's training or demonstrate reliable performance at a higher speed.
 
-<details><summary><h3>⚒ Installation</h3></summary>
+### 4. NNLC loaded-notification suppression
 
----
+In [`selfdrive/controls/controlsd.py`](https://github.com/aeae1/openpilot/blob/f4fbb5bc628da0f363e83c2b7c80e3793327eed3/selfdrive/controls/controlsd.py), `self.nn_alert_shown` starts as `True`, suppressing the periodic NNLC-loaded notification path. This does not create or force a successful NNLC model load. Absence of that notification is not evidence of which model is running.
 
-  <details><summary>URL (Easy)</summary>
+### 5. Fork-origin recognition
 
-comma three
-------
+In [`system/version.py`](https://github.com/aeae1/openpilot/blob/f4fbb5bc628da0f363e83c2b7c80e3793327eed3/system/version.py), `github.com/aeae1/openpilot` was added to `is_comma_remote()`'s recognized-origin list. This changes the code's classification of the remote. It does not make the fork an official comma/sunnypilot build or certify that it was tested.
 
-Please refer to [Recommended Branches](#-recommended-branches) to find your preferred/supported branch. This guide will assume you want to install the latest `release-c3` branch.
+### Scope of the final changes
 
-* sunnypilot not installed or you installed a version before 0.8.17?
-  1. [Factory reset/uninstall](https://github.com/commaai/openpilot/wiki/FAQ#how-can-i-reset-the-device) the previous software if you have another software/fork installed.
-  2. After factory reset/uninstall and upon reboot, select `Custom Software` when given the option.
-  3. Input the installation URL per [Recommended Branches](#-recommended-branches). Example: ```release-c3.sunnypilot.ai``` [^4] (note: `https://` is not requirement on the comma three)
-  4. Complete the rest of the installation following the onscreen instructions.
-
-* sunnypilot already installed and you installed a version after 0.8.17?
-  1. On the comma three, go to `Settings` ▶️ `Software`.
-  2. At the `Download` option, press `CHECK`. This will fetch the list of latest branches from sunnypilot.
-  3. At the `Target Branch` option, press `SELECT` to open the Target Branch selector.
-  4. Scroll to select the desired branch per [Recommended Branches](#-recommended-branches). Example: `release-c3`
-
-|    Branch    |         Installation URL         |
-|:------------:|:--------------------------------:|
-| `release-c3` | https://release-c3.sunnypilot.ai |
-| `staging-c3` | https://staging-c3.sunnypilot.ai |
-|   `dev-c3`   | https://dev-c3.sunnypilot.ai     |
-
-Requires further assistance with software installation? Join the [sunnypilot Discord server](https://discord.sunnypilot.com) and message us in the `#installation-help` channel.
-
-comma two
-------
-
-1. [Factory reset/uninstall](https://github.com/commaai/openpilot/wiki/FAQ#how-can-i-reset-the-device) the previous software if you have another software/fork installed.
-2. After factory reset/uninstall and upon reboot, select `Custom Software` when given the option.
-3. Input the installation URL per [Recommended Branches](#-recommended-branches). Example: ```https://smiskol.com/fork/sunnyhaibin/0.8.12-4-prod```
-4. Complete the rest of the installation following the onscreen instructions.
-
-Requires further assistance with software installation? Join the [sunnypilot Discord server](https://discord.sunnypilot.com) and message us in the `#installation-help` channel.
-
-  </details>
-
-  <details>
-  <summary>SSH (More Versatile)</summary>
-  <br>
-
-Prerequisites: [How to SSH](https://github.com/commaai/openpilot/wiki/SSH)
-
-If you are looking to install sunnypilot via SSH, run the following command in an SSH terminal after connecting to your device:
-
-comma three:
-------
-* [`release-c3`](https://github.com/sunnyhaibin/openpilot/tree/release-c3):
-
-  ```
-  cd /data; rm -rf ./openpilot; git clone -b release-c3 --recurse-submodules https://github.com/sunnyhaibin/sunnypilot.git openpilot; cd openpilot; sudo reboot
-  ```
-
-comma two:
-------
-* [`0.8.12-prod-personal-hkg`](https://github.com/sunnyhaibin/openpilot/tree/0.8.12-prod-personal-hkg):
-
-  ```
-  cd /data; rm -rf ./openpilot; git clone -b 0.8.12-prod-personal-hkg --recurse-submodules https://github.com/sunnyhaibin/sunnypilot.git openpilot; cd openpilot; sudo reboot
-  ```
-
-After running the command to install the desired branch, your comma device should reboot.
-  </details>
-
-</details>
-
-
-<details><summary><h3>🚗 Highlight Features</h3></summary>
-
----
-
-### Quality of Life Enhancements
-- [**Modified Assistive Driving Safety (MADS)**](#modified-assistive-driving-safety-mads) - Automatic Lane Centering (ALC) / Lane Keep Assist System (LKAS) and Adaptive Cruise Control (ACC) / Smart Cruise Control (SCC) can be engaged independently of each other
-- [**Dynamic Lane Profile (DLP)**](#dynamic-lane-profile-dlp) - Dynamically switch lane profile (between Laneful and Laneless) based on lane recognition confidence
-- [**Enhanced Speed Control**](#enhanced-speed-control) - Automatically adjust cruise control speed using vision model, OpenStreetMap (OSM) data, and/or Speed Limit control (SLC) without user interaction
-    * Vision-based Turn Speed Control (V-TSC) - lower speed when going around corners using vision model
-    * Map-Data-based Turn Speed Control (M-TSC) - lower speed when going around corners using OSM data[^1]
-    * Speed Limit Control (SLC) - Set speed limit based on map data or car interface (if applicable)
-    * HKG only: Highway Driving Assist (HDA) status integration - Use cars native speed sign detection to set desired speed (on applicable HKG cars only)
-- [**Gap Adjust Cruise (GAC)**](#gap-adjust-cruise) - Allow `GAP`/`INTERVAL`/`DISTANCE` button on the steering wheel or on-screen button to adjust the follow distance from the lead car. See table below for options
-    - [**Quiet Drive 🤫**](#-quiet-drive) - Toggle to mute all notification sounds (excluding driver safety warnings)
-    - [**Auto Lane Change Timer**](#Auto-Lane-Change-Timer) - Set a timer to delay the auto lane change operation when the blinker is used. No nudge on the steering wheel is required to auto lane change if a timer is set
-    - [**Force Car Recognition (FCR)**](#Force-Car-Recognition-) - Use a selector to force your car to be recognized by sunnypilot
-    - [**Fix sunnypilot No Offroad**](#Fix-sunnypilot-No-Offroad) - Enforce sunnypilot to go offroad and turns off after shutting down the car. This feature fixes non-official devices running sunnypilot without comma power
-    - [**Enable ACC+MADS with RES+/SET-**](#Enable-ACC+MADS-with-RES+/SET-) - Engage both ACC and MADS with a single press of RES+ or SET- button
-    - [**Offline OSM Maps**](#Offline-OSM-Maps) - OSM database can now be downloaded locally for offline use[^2]. This enables offline SLC, V-TSC and M-TSC. Currently available for US South, US West, US Northeast, Florida, Taiwan, South Africa and New Zealand
-    - [**Various Live Tuning**](#Various-Live-Tuning) - Ability to tailor your driving experience on the fly:
-        * Enforce Torque Lateral Control - Use the newest [torque controller](https://blog.comma.ai/0815release/#torque-controller) for all vehicles.
-        * Torque Lateral Control Live Tune - Ability to adjust the torque controller’s `FRICTION` and `LAT_ACCEL_FACTOR` values to suit your vehicle.
-        * Torque Lateral Controller Self-Tune - Enable automatic turning for the Torque controller.
-
-### Visual Enhancements
-* **M.A.D.S Status Icon** - Dedicated icon to display M.A.D.S. engagement status
-    * Green🟢: M.A.D.S. engaged
-    * White⚪: M.A.D.S. suspended or disengaged
-* **Lane Path Color** - Various lane path colors to display real-time Lane Model and M.A.D.S. engagement status
-    * 0.8.14 and later:
-        * Blue🔵: Laneful mode & M.A.D.S. engaged
-        * Green🟢: Laneless mode & M.A.D.S. engaged
-        * Yellow🟡: Experimental e2e & M.A.D.S. engaged
-    * Pre 0.8.14:
-        * Green🟢: Laneful mode & M.A.D.S. engaged
-        * Red🔴: Laneless mode & M.A.D.S. engaged
-    * White⚪: M.A.D.S. suspended or disengaged
-    * Black⚫: M.A.D.S. engaged, steering is being manually overridden by user
-* **Developer (Dev) UI** - Display various real-time metrics on screen while driving
-* **Stand Still Timer** - Display time spent at a stop with M.A.D.S engaged (i.e., at traffic lights, stop signs, traffic congestions)
-* **Braking Status** - Current car speed text turns red when the car is braking by the driver or ACC/SCC
-
-### Operational Enhancements
-* **Fast Boot** - sunnypilot will fast boot by creating a Prebuilt file
-* **Disable Onroad Uploads** - Disable uploads completely when onroad. Necessary to avoid high data usage when connected to Wi-Fi hotspot
-* **Brightness Control (Global)** - Manually adjusts the global brightness of the screen
-* **Driving Screen Off Timer** - Turns off the device screen or reduces brightness to protect the screen after car starts
-* **Driving Screen Off Brightness (%)** - When using the Driving Screen Off feature, the brightness is reduced according to the automatic brightness ratio
-* **Max Time Offroad** - Device is automatically turned off after a set time when the engine is turned off (off-road) after driving (on-road)
-
-</details>
-
-<details><summary><h3>🚗 Driving Enhancements</h3></summary>
-
----
-
-### Modified Assistive Driving Safety (MADS)
-The goal of Modified Assistive Driving Safety (MADS) is to enhance the user driving experience with modified behaviors of driving assist engagements. This feature complies with comma.ai's safety rules as accurately as possible with the following changes:
-* sunnypilot Automatic Lane Centering (ALC) and ACC/SCC can be engaged independently of each other
-* Dedicated button to toggle sunnypilot ALC:
-    * `CRUISE (MAIN)` button: All supported cars on sunnypilot
-        * `LFA` button: Newer HKG cars with `LFA` button
-        * `LKAS` button: Honda, Toyota, Global Subaru
-* `SET-` button enables ACC/SCC
-* `CANCEL` button only disables ACC/SCC
-* `CRUISE (MAIN)` must be `ON` to use ACC/SCC
-* `CRUISE (MAIN)` button disables sunnypilot completely when `OFF` **(strictly enforced in panda safety code)**
-
-### Disengage Lateral ALC on Brake Press Mode toggle
-Dedicated toggle to handle Lateral state on brake pedal press and release:
-1. `ON`: `BRAKE pedal` press will pause Automatic Lane Centering; `BRAKE pedal` release will resume Automatic Lane Centering. Note: `BRAKE pedal` release will NOT resume ACC/SCC/Long control without explicit user engagement **(strictly enforced in panda safety code)**
-2. `OFF`: `BRAKE pedal` press will NOT pause Automatic Lane Centering; `BRAKE pedal` release will NOT resume ACC/SCC/Long control without explicit user engagement **(strictly enforced in panda safety code)**
-
-### Miscellaneous
-* `TURN SIGNALS` (`Left` or `Right`) will pause Automatic Lane Centering if the vehicle speed is below the [threshold](https://github.com/commaai/openpilot/blob/master/selfdrive/controls/lib/desire_helper.py#L8) for Automatic Lane Change
-* Event audible alerts are more relaxed to match manufacturer's stock behavior
-* Critical events trigger disengagement of Automatic Lane Centering completely. The disengagement is enforced in sunnypilot and panda safety
-
-### Dynamic Lane Profile (DLP)
-
-Dynamic Lane Profile (DLP) aims to provide the best driving experience at staying within a lane confidently. Dynamic Lane Profile allows sunnypilot to dynamically switch between lane profiles based on lane recognition confidence level on road.
-
-There are 3 modes to select on the onroad camera screen:
-* **Auto Lane**: sunnypilot dynamically chooses between `Laneline` or `Laneless` model
-* **Laneline**: sunnypilot uses Laneline model only.
-* **Laneless**: sunnypilot uses Laneless model only.
-
-To use Dynamic Lane Profile, do the following:
-```
-1. sunnypilot Settings -> `SP - Controls` -> Enable Dynamic Lane Profile -> ON toggle
-2. Reboot.
-3. Before driving, on the onroad camera screen, toggle between the 3 modes by pressing on the button.
-4. Drive.
-```
-
-### Enhanced Speed Control
-This fork now allows supported cars to dynamically adjust the longitudinal plan based on the fetched map data. Big thanks to the Move Fast team for the amazing implementation!
-
-**Supported cars:**
-* sunnypilot Longitudinal Control capable
-* Stock Longitudinal Control
-    * Hyundai/Kia/Genesis (non CAN-FD)
-    * Honda Bosch
-    * Volkswagen MQB
+The final personal diff has **no net changes to the Chrysler-specific controller/interface/CAN files, panda safety files, or driver-monitoring code** relative to the stated sunnypilot baseline. Historical Chrysler experiments were reverted. This does not negate the shared-interface and event-handling changes described above, and it is not a safety-equivalence claim.
 
-Certain features are only available with an active data connection, via:
-* [comma Prime](https://comma.ai/prime) - Intuitive service provided directly by comma, or
-* Personal Hotspot - From your mobile device, or a dedicated hotspot from a cellular carrier.
+This is a personal fork with explicit behavioral departures from its upstream release. Other users should evaluate the actual code and their own hardware rather than treat the owner's satisfaction as general vehicle validation. Normal driver supervision remains necessary.
 
-**Features:**
-* Vision-based Turn Speed Control (VTSC) - Use vision path predictions to estimate the appropriate speed to drive through turns ahead - i.e. slowing down for curves
-* Map-Data-based Turn Speed Control (MTSC) - Use curvature information from map data to define speed limits to take turns ahead - i.e. slowing down for curves[^1]
-* Speed Limit Control (SLC) - Use speed limit signs information from map data and car interface to automatically adapt cruise speed to road limits
-    * HKG only: Highway Driving Assist (HDA) status integration - on applicable HKG cars only[^1]
-    * Speed Limit Offset - When Speed Limit Control is enabled, set speed limit slightly higher than the actual speed limit for a more natural drive[^1]
-* Toggle Hands on Wheel Monitoring - Monitors and alerts the driver when their hands have not been on the steering wheel for an extended time
-
-### Custom Stock Longitudinal Control
-While using stock Adaptive/Smart Cruise Control, Custom Stock Longitudinal Control in sunnypilot allows sunnypilot to manipulate and take over the set speed on the car's dashboard.
-
-**Supported Cars:**
-* Hyundai/Kia/Genesis
-    * CAN platform
-    * CAN-FD platform with 0x1CF broadcasted in CAN traffic
-* Honda Bosch
-* Volkswagen MQB
-
-**Instruction**
-
-**📗 How to use Custom Longitudinal Control on sunnypilot **
-
-When using Speed Limit, Vision, or Map based Turn control, you will be setting the "MAX" ACC speed on the sunnypilot display instead of the one in the dashboard. The car will then set the ACC setting in the dashboard to the targeted speed, but will never exceed the max speed set on the sunnypilot display. A quick press of the RES+ or SET- buttons will change this speed by 5 MPH or KM/H on the sunnypilot display, while a long deliberate press (about a 1/2 second press) changes it by 1 MPH or KM/H. DO NOT hold the RES+ or SET- buttons for longer that a 1 second. Either make quick or long deliberate presses only.
-
-**‼ Where to look when setting ACC speed ‼**
-
-Do not look at the dashboard when setting your ACC max speed. Instead, only look at the one on the sunnypilot display, "MAX". The reason you need to look at the sunnypilot display is because sunnypilot will be changing the one in the dashboard. It will be adjusting it as needed, never raising it above the one set on the sunnypilot display. ONLY look at the MAX speed on the sunnypilot display when setting the ACC speed instead of the dashboard!
-
-(Courtesy instructions from John, author of jvePilot)
-
-### Gap Adjust Cruise
-This fork now allows supported openpilot longitudinal cars to adjust the cruise gap between the car and the lead car.
-
-**Supported cars:**
-* sunnypilot Longitudinal Control capable
-
-🚨**PROCEED WITH EXTREME CAUTION AND BE READY TO MANUALLY TAKE OVER AT ALL TIMES**
-
-There are 4 modes to select on the steering wheel and/or the onroad camera screen:
-* **Stock Gap**: Stock sunnypilot distance - 1.45 second profile
-* **Mild Gap**: Semi-aggressive distance - 1.25 second profile
-* 🚨**Aggro Gap**🚨: Aggressive distance - 1.0 second profile
-
-**Availability**
-
-|      Car Make       | Stock Gap | Mild Gap | Aggro Gap |
-|:-------------------:|:---------:|:--------:|:---------:|
-|     Honda/Acura     |     ✅     |    ✅     |     ✅     |
-| Hyundai/Kia/Genesis |     ✅     |    ✅     |     ✅     |
-|    Toyota/Lexus     |     ✅     |    ✅     |     ✅     |
-|  Volkswagen MQB/PQ  |     ✅     |    ✅     |     ✅     |
-
-</details>
-
-
-<details><summary><h3>⚒ Branch Definitions</h3></summary>
-
----
-
-|    Tag    | Definition           | Description                                                                                                                                                                                 |
-|:---------:|----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `release` | Release branches     | Include features that are **verified** by trusted testers and the community. Ready to use. ✅                                                                                                |
-| `staging` | Staging branches     | Include new features that are **tested** by trusted testers and the community. Stability may vary. ⚠                                                                                        |
-|   `dev`   | Development branches | All features are gathered in respective versions. Reviewed and merged features will be committed to `dev`. Stability may vary. ⚠                                                            |
-| `master`  | Main branch          | Syncs with [commaai's openpilot `master`](https://github.com/commaai/openpilot) upstream branch. Accepts all pull requests. Does not include all sunnypilot features. Stability may vary. ⚠ |
-
-Example:
-* [`release-c3`](https://github.com/sunnyhaibin/sunnypilot/tree/release-c3): Latest release branch for comma three that are verified by trusted testers and the community. Ready to use.
-* [`staging-c3`](https://github.com/sunnyhaibin/sunnypilot/tree/staging-c3): Latest staging branch for comma three that are tested by trusted testers and the community. Verification required.
-* [`dev-c3`](https://github.com/sunnyhaibin/sunnypilot/tree/dev-c3): Latest development branch for comma three that include all sunnypilot features. Testing required.
-
-</details>
-
-<details><summary><h3>✅ Recommended Branches</h3></summary>
-
----
-
-| Branch                                                                              | Definition                                              | Compatible Device | Changelogs                                                                                 |
-|:------------------------------------------------------------------------------------|---------------------------------------------------------|-------------------|--------------------------------------------------------------------------------------------|
-| [`release-c3`](https://github.com/sunnyhaibin/sunnypilot/tree/release-c3)           | • Latest release/stable branch                          | comma three       | [`CHANGELOGS.md`](https://github.com/sunnyhaibin/sunnypilot/blob/release-c3/CHANGELOGS.md) |
-| [`staging-c3`](https://github.com/sunnyhaibin/sunnypilot/tree/staging-c3)           | • Latest staging branch                                 | comma three       | [`CHANGELOGS.md`](https://github.com/sunnyhaibin/sunnypilot/blob/staging-c3/CHANGELOGS.md) |
-| [`dev-c3`](https://github.com/sunnyhaibin/sunnypilot/tree/dev-c3)                   | • Latest development branch with experimental features  | comma three       | [`CHANGELOGS.md`](https://github.com/sunnyhaibin/sunnypilot/blob/dev-c3/CHANGELOGS.md)     |
-
-</details>
-
-<details><summary><h3>📗 How To's</h3></summary>
-
----
-
-How-To instructions can be found in [HOW-TOS.md](https://github.com/sunnyhaibin/openpilot/blob/(!)README/HOW-TOS.md).
-
-</details>
-
-
-<details><summary><h3>🎆 Pull Requests</h3></summary>
-
----
-
-We welcome both pull requests and issues on GitHub. Bug fixes are encouraged.
-
-Pull requests should be against the most current `master` branch.
-
-</details>
-
-<details><summary><h3>🏆 Special Thanks</h3></summary>
-
----
-
-* [spektor56](https://github.com/spektor56/openpilot)
-* [rav4kumar](https://github.com/rav4kumar/openpilot)
-* [mob9221](https://github.com/mob9221/opendbc)
-* [briantran33](https://github.com/briantran33/openpilot)
-* [Aragon7777](https://github.com/aragon7777/openpilot)
-* [sshane](https://github.com/sshane/openpilot-installer-generator)
-* [jung](https://github.com/chanhojung/openpilot)
-* [dri94](https://github.com/dri94/openpilot)
-* [FrogAi](https://github.com/frogAi/FrogPilot/)
-* [twilsonco](https://github.com/twilsonco/openpilot)
-* [martinl](https://github.com/martinl/openpilot)
-* [multikyd](https://github.com/openpilotkr)
-* [Move Fast GmbH](https://github.com/move-fast/openpilot)
-* [dragonpilot](https://github.com/dragonpilot-community/dragonpilot)
-* [neokii](https://github.com/neokii/openpilot)
-* [AlexandreSato](https://github.com/AlexandreSato/openpilot)
-* [Moodkiller](https://github.com/moodkiller)
-
-</details>
-
-<details><summary><h3>📊 User Data</h3></summary>
-
----
-
-By default, sunnypilot uploads the driving data to comma servers. You can also access your data through [comma connect](https://connect.comma.ai/).
-
-sunnypilot is open source software. The user is free to disable data collection if they wish to do so.
-
-sunnypilot logs the road-facing camera, CAN, GPS, IMU, magnetometer, thermal sensors, crashes, and operating system logs.
-The driver-facing camera is only logged if you explicitly opt-in in settings. The microphone is not recorded.
-
-By using this software, you understand that use of this software or its related services will generate certain types of user data, which may be logged and stored at the sole discretion of comma. By accepting this agreement, you grant an irrevocable, perpetual, worldwide right to comma for the use of this data.
-
-</details>
-
-<details><summary><h3>Licensing</h3></summary>
-
-openpilot is released under the MIT license. Some parts of the software are released under other licenses as specified.
-
-Any user of this software shall indemnify and hold harmless comma.ai, Inc. and its directors, officers, employees, agents, stockholders, affiliates, subcontractors and customers from and against all allegations, claims, actions, suits, demands, damages, liabilities, obligations, losses, settlements, judgments, costs and expenses (including without limitation attorneys’ fees and costs) which arise out of, relate to or result from any use of this software by user.
-
-**THIS IS ALPHA QUALITY SOFTWARE FOR RESEARCH PURPOSES ONLY. THIS IS NOT A PRODUCT.
-YOU ARE RESPONSIBLE FOR COMPLYING WITH LOCAL LAWS AND REGULATIONS.
-NO WARRANTY EXPRESSED OR IMPLIED.**
-
-</details>
-
-<h3>💰 Support sunnypilot</h3>
-
----
-
-If you find any of the features useful, consider becoming a [patron on Patreon](https://www.patreon.com/sunnyhaibin) or a [sponsor on GitHub](https://github.com/sponsors/sunnyhaibin) to support future feature development and improvements.
-
-
-By becoming a patron/sponsor, you will gain access to exclusive content, early access to new features, and the opportunity to directly influence the project's development.
-
-<h3>Patreon</h3>
-
-<a href="https://www.patreon.com/sunnyhaibin">
-  <img src="https://user-images.githubusercontent.com/47793918/244128051-bc7e913e-a196-4455-926e-23aec9a4bd3b.png" alt="Become a Patron" width="300" style="max-width: 100%; height: auto;">
-</a>
-<br>
-
-<h3>GitHub Sponsor</h3>
-
-<a href="https://github.com/sponsors/sunnyhaibin">
-  <img src="https://user-images.githubusercontent.com/47793918/244135584-9800acbd-69fd-4b2b-bec9-e5fa2d85c817.png" alt="Become a Sponsor" width="300" style="max-width: 100%; height: auto;">
-</a>
-<br>
-
-<h3>PayPal</h3>
-
-<a href="https://paypal.me/sunnyhaibin0850" target="_blank">
-<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" alt="PayPal this" title="PayPal - The safer, easier way to pay online!" border="0" />
-</a>
-<br></br>
-
-Your continuous love and support are greatly appreciated! Enjoy 🥰
-
-<span>-</span> Jason, Founder of sunnypilot
-
-[^1]:Requires data connection if not using Offline Maps data
-[^2]:At least 50 GB of storage space is required. If you have the 32 GB version of comma three, upgrading with a compatible 250 GB or 1 TB SSD is strongly recommended
-[^4]:Shortened URL for convenience. Full URL is ```smiskol.com/fork/sunnyhaibin/release-c3```
+## Inherited features that shape this setup
+
+The following are sunnypilot features configured by the owner, rather than newly written personal modifications:
+
+- **MADS:** independent management of lateral assistance and ACC, with Cruise Main and brake behavior options.
+- **Dynamic Lane Profile and custom offsets:** the legacy lane planner and its configurable camera/path biases.
+- **NNLC / `NNFF`:** neural-network feedforward in torque lateral control. The enabled NNLC setting can select torque tuning even with “Enforce Torque Lateral Control” off. Exact NNLC model matching depends on the vehicle and EPS firmware; the loaded model filename has not been read from this device.
+- **Custom Stock Longitudinal:** manages the requested cruise speed through the vehicle's stock ACC interface. The Pacifica's factory system still performs the longitudinal actuation; this is not full openpilot longitudinal control.
+- **Vision-based turn speed control, nudgeless lane-change options, road-edge blocking, Quiet Drive, map/display options, and reverse driver-camera view.**
+
+Blue Diamond v2 is the **driving model**, while the NNLC files are separate **steering-control models**. Backing up one does not identify which specific NNLC model was selected at runtime; the preserved deployment includes its available NNLC files.
+
+### Why the offset and model combination matters
+
+The selected profile is **Laneful**, with **Custom Offsets ON**, **Camera Offset −20 cm**, and **Path Offset 0 cm**. In this release, camera offset is read as an integer number of centimeters and applied to the predicted lane-line coordinates. Path offset is applied to the model path before blending. Lane confidence and width still affect how strongly the planner follows the lane-derived path.
+
+The UI describes a decreasing camera-offset value as biasing the car farther left. This is the legacy lane-planner adjustment used by this setup. It is not a universal mounting calibration, and a newer setting with the same name may use a different implementation, sign convention, or model path. Do not transfer the numerical value between generations without checking the code.
+
+## Owner's photographed preferences
+
+**These are observed preferences, not programmed installation defaults.** They describe the owner's photos supplied for this review, not a complete parameter export. The tables omit device identifiers, local network details, account credentials, and unrelated car-brand toggles.
+
+### Driving and lane behavior
+
+| Setting | Observed value |
+|---|---|
+| Driving model | Blue Diamond v2 |
+| Dynamic Lane Profile | Laneful |
+| Custom Offsets | On |
+| Camera Offset — Laneful Only | −20 cm |
+| Path Offset | 0 cm |
+| MADS | On |
+| Toggle MADS with Cruise Main | On |
+| Enable ACC+MADS with RES+/SET− | Off |
+| Steering Mode After Braking | “Remain Active” appears selected; dimmed photo, parameter export needed for definitive confirmation |
+| Disengage on accelerator | Off |
+| NNLC | On |
+| Enforce Torque Lateral Control | Off |
+| Custom Stock Longitudinal | On |
+| Experimental Mode | Off |
+| Dynamic Experimental Control | Off |
+| Vision-based Turn Speed Control | On |
+| Speed Limit Control | Off |
+| ACC Long Press Reverse | On |
+| Auto Lane Change Timer | Nudgeless |
+| Pause lateral below speed with blinker | Off |
+| Delay automatic lane change with blind spot | Off |
+| Block lane change at road edge | On |
+| Units | Imperial / mph |
+
+### Alerts, monitoring, and recording
+
+| Setting | Observed value |
+|---|---|
+| Quiet Drive | On |
+| Green traffic light chime | Off |
+| Lead departure alert | Off |
+| Hands-on-wheel monitoring option | Off; this does not disable camera-based driver monitoring |
+| Lane departure warning | Off |
+| Record/upload driver camera | Off |
+| Disable onroad uploads | Off; this double-negative option does not disable onroad uploads |
+| Screen recorder | Off |
+
+### Display and maps
+
+| Setting | Observed value |
+|---|---|
+| Developer UI / detailed metrics | Off |
+| Feature status | Off |
+| Display braking | Off |
+| Standstill timer | Off |
+| OSM debug | Off |
+| End-to-end longitudinal status | Off |
+| Sidebar temperature | Off |
+| Onroad settings | On |
+| Display driver camera in reverse | On |
+| True speed display | Off |
+| Hide speedometer | Off |
+| Metrics above chevron | Speed; the menu labels this as applicable only to openpilot longitudinal control |
+| Driving screen-off timer | Always On |
+| Brightness | Auto |
+| Maximum time offroad | 3 hours |
+| Navigation full screen | Off |
+| Map on left | Off |
+| Map 3D buildings | Off |
+| ETA in 24-hour format | Off |
+| Mapd version shown | 1.8.0 |
+| OSM database date shown | March 22, 2025, 14:03:37 |
+| OSM region selection | United States / All States, approximately 4.8 GB listed |
+
+The map screen's “Calculating…” size display does not prove every selected map file was downloaded. Neither the offline map files nor a private navigation token are included in the model backup.
+
+## Defaults and replacement-device recovery
+
+The current `selfdrive/manager/manager.py` seeds its existing defaults only when a parameter is absent. It does **not** currently seed the owner's full profile. Examples of differences are:
+
+| Preference | Current code default | Owner's observed selection |
+|---|---|---|
+| `AccMadsCombo` | `1` / On | `0` / Off |
+| `DynamicLaneProfile` | `1` / Laneless | `0` / Laneful |
+| `CustomOffsets` | `0` / Off | `1` / On |
+| `CameraOffset` | `4` / +4 cm | `-20` / −20 cm |
+| `NNFF` | `0` / Off | `1` / On |
+| `TurnVisionControl` | `0` / Off | `1` / On |
+| `ReverseAccChange` | `0` / Off | `1` / On |
+| `AutoLaneChangeTimer` | `0` | Nudgeless, corresponding to `1` in this release |
+| `AutoLaneChangeBsmDelay` | `1` / On | `0` / Off |
+| `ScreenRecorder` | `1` / On | `0` / Off |
+| `ShowDebugUI` | `1` / On | `0` / Off |
+| `FeatureStatus` | `1` / On | `0` / Off |
+
+A fresh clone alone therefore does not reproduce the owner's setup. The custom driving-model files normally live outside the Git checkout at `/data/media/0/models`; model selection and most preferences live in the device's parameter store.
+
+The agreed **future design**, still unimplemented, is to apply a named personal profile on a clean installation, preserve later manual adjustments during ordinary boots, and offer an explicit “Restore My Setup” action to reapply it. A replacement used comma is assumed to be wiped first. Device identity, registration, credentials, calibration, and learned values should belong to that replacement device rather than be blindly copied from the old one.
+
+For an eventual restoration, preserve the exact deployment identity, obtain the matching three model files and verify their checksums, confirm model selection, reapply the documented preferences, and complete the replacement device's own setup/calibration. The archive README records the loader's required parameters. **No automatic restore procedure or clean-device installation has been implemented or tested as part of this documentation/backup work.**
+
+## Lead marker and speed-display idea
+
+A calmer lead marker with one readable speed value was discussed, but is **not implemented**. The owner's requirement is a trustworthy measured speed, not a smoothed estimate that merely looks precise.
+
+In this branch, `selfdrive/car/chrysler/interface.py` sets **`radarUnavailable=True`**. This means the openpilot lead-processing path does not receive usable radar tracks through this port; it does not mean the Pacifica lacks radar or that its factory ACC stops using radar. The vision fallback derives lead speed from the driving model and ego-speed information. Smoothing its marker or rounding its digits would improve appearance without establishing measurement accuracy. This feature remains paused unless a reliable source can be demonstrated.
+
+## Maintenance notes
+
+- Compare against the pinned baseline when auditing personal modifications. Commit messages include experiments and reversions, so counting historical edits overstates the final changes.
+- Keep the model/metadata/navigation-model combination together. The stock bundled `supercombo.thneed` is not the custom Blue Diamond v2 file.
+- Recover the source matching the prebuilt release before attempting UI changes. The default branch is not a substitute for that investigation.
+- Preserve the distinction between a named branch and a commit. This release contains branch-name-dependent behavior; an archive branch should not be assumed to behave identically if installed under its archive name.
+- Preserve working behavior when evaluating later models or controls. Model generations, lane planning, offsets, and UI implementations are coupled; a model swap is not automatically a drop-in upgrade.
+- The September 2026 work adds documentation and a model archive only. It does not change runtime code, seed preferences, install an update on a device, or add the proposed lead-speed UI.
+
+## Attribution and license
+
+This fork builds on [sunnypilot](https://github.com/sunnypilot/sunnypilot), [comma's openpilot](https://github.com/commaai/openpilot), and their contributors, including the authors of the inherited NNLC, mapping, vehicle-support, and UI features. Personal changes are maintained by **aeae1**. Much of the original work involved both AI assistance and manual editing; this README records the final code behavior rather than assigning authorship to individual edits.
+
+The repository's existing [LICENSE](LICENSE) and third-party notices remain unchanged. Model provenance is recorded in the backup manifest, and archiving the artifacts does not relicense them. Historical upstream information remains in `CHANGELOGS.md` and `RELEASES.md`; those files describe upstream releases and should not be read as a list of personal modifications.
