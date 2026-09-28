@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "archived_on": "2026-09-28",
+  "display_name": "Blue Diamond v2 (December 12, 2023)",
+  "catalog_key": "NLP+BDv2",
+  "scope": "Complete published Blue Diamond v2 runtime package; not an image of the owner device or a training checkpoint.",
+  "provenance": {
+    "catalog_repository": "https://github.com/sunnypilot/sunnypilot-models",
+    "catalog_commit": "ea53605c39516336897b186ae76a22c74f6c658c",
+    "catalog_path": "docs/models_v3.json",
+    "catalog_sha256": "935d8362582fdf466e09ff52ee03c1ac99eaf45cf5bb1760f7d0845af38a84f9",
+    "catalog_entry": {
+      "display_name": "Blue Diamond v2 (December 12, 2023)",
+      "full_name": "blue-diamond-v2",
+      "file_name": "supercombo-blue-diamond-v2.thneed",
+      "download_uri": {
+        "url": "https://gitlab.com/sunnypilot/public/docs.sunnypilot.ai/-/raw/main/models/supercombo-blue-diamond-v2.thneed",
+        "sha256": "b298caa4be035dbe25b9158f0ba3d0b59a99e6a695a11fccda98b69f5050f29f"
+      },
+      "full_name_nav": "gen1",
+      "file_name_nav": "navmodel_q_gen1.dlc",
+      "download_uri_nav": {
+        "url": "https://gitlab.com/sunnypilot/public/docs.sunnypilot.ai/-/raw/main/models/navmodel_q_gen1.dlc",
+        "sha256": "c808717d073a0bb347f9ba929953c0b2b792ce9997f343f7e44a0b2b0e139132"
+      },
+      "full_name_metadata": "gen1",
+      "file_name_metadata": "supercombo_metadata_gen1.pkl",
+      "download_uri_metadata": {
+        "url": "https://gitlab.com/sunnypilot/public/docs.sunnypilot.ai/-/raw/main/models/supercombo_metadata_gen1.pkl",
+        "sha256": "1924d0918e1cd5914598be67077aa99413eb346291b6b617fb83c222ea8991b8"
+      },
+      "index": "3",
+      "environment": "release",
+      "generation": "1"
+    }
+  },
+  "verification": {
+    "all_three_payload_sha256_match_upstream_catalog": true,
+    "owner_device_files_read": false,
+    "hardware_restore_tested": false,
+    "pickle_deserialized_during_archival": false
+  },
+  "compatible_recorded_setup": {
+    "hardware": "comma 3X",
+    "vehicle_reported_by_owner": "2025 Chrysler Pacifica Hybrid",
+    "repository": "https://github.com/aeae1/openpilot",
+    "branch": "release-c3",
+    "pre_documentation_commit": "f4fbb5bc628da0f363e83c2b7c80e3793327eed3",
+    "upstream_base_commit": "e8de7d3fcd81d4d31c62ee2db53ebf76b7582ca8",
+    "software_version": "0.9.6.1-release",
+    "agnos_version_required_by_launch_env": "9.6",
+    "installed_agnos_version_read_from_device": false
+  },
+  "loader_contract": {
+    "source": "selfdrive/modeld/modeld.py and navmodeld.py at pre_documentation_commit",
+    "model_directory": "/data/media/0/models",
+    "required_parameter_values_derived_from_code_and_catalog": {
+      "CustomDrivingModel": "1",
+      "DrivingModelGeneration": "1",
+      "DrivingModelText": "blue-diamond-v2",
+      "DrivingModelMetadataText": "gen1",
+      "NavModelText": "gen1"
+    },
+    "note": "Reference values only. No script applies them; UI selection bookkeeping and device parameters have not been exported."
+  },
+  "files": [
+    {
+      "file": "supercombo-blue-diamond-v2.thneed",
+      "role": "driving model",
+      "bytes": 49235840,
+      "sha256": "b298caa4be035dbe25b9158f0ba3d0b59a99e6a695a11fccda98b69f5050f29f",
+      "git_blob_sha1": "47e54241ddd9ec71ac9c5dda603c8a039af798b3",
+      "upstream_url": "https://gitlab.com/sunnypilot/public/docs.sunnypilot.ai/-/raw/main/models/supercombo-blue-diamond-v2.thneed"
+    },
+    {
+      "file": "navmodel_q_gen1.dlc",
+      "role": "navigation model",
+      "bytes": 3630942,
+      "sha256": "c808717d073a0bb347f9ba929953c0b2b792ce9997f343f7e44a0b2b0e139132",
+      "git_blob_sha1": "a899829e3bc30d345a76d3931609239616a8afa9",
+      "upstream_url": "https://gitlab.com/sunnypilot/public/docs.sunnypilot.ai/-/raw/main/models/navmodel_q_gen1.dlc"
+    },
+    {
+      "file": "supercombo_metadata_gen1.pkl",
+      "role": "model metadata",
+      "bytes": 727,
+      "sha256": "1924d0918e1cd5914598be67077aa99413eb346291b6b617fb83c222ea8991b8",
+      "git_blob_sha1": "bed9c77184a1e3d4c2108f71547a4c168859b987",
+      "upstream_url": "https://gitlab.com/sunnypilot/public/docs.sunnypilot.ai/-/raw/main/models/supercombo_metadata_gen1.pkl"
+    }
+  ],
+  "payload_total_bytes": 52867509,
+  "not_included": [
+    "device parameter export",
+    "device identity, keys, account pairing, calibration or learned values",
+    "AGNOS partition images",
+    "offline map files, recordings, routes or personal tokens",
+    "original training data or a model training checkpoint"
+  ],
+  "licensing": "Upstream attribution and license notices are retained; this archive does not relicense model artifacts."
+}
