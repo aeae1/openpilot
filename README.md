@@ -6,7 +6,7 @@ The setup is pretty much frozen in time, and I'm fine with that. I'm curious whe
 
 **The branch I actually use is [`release-c3`](https://github.com/aeae1/openpilot/tree/release-c3).** GitHub's default branch, `master`, is a different historical source tree. This README describes `release-c3` even when you're reading it on `master`; the surrounding code on `master` doesn't contain the same personal changes.
 
-I made the original changes with a mix of AI help and manual work, with plenty of edits and reversions along the way. This README is here so future me and anyone else looking through the repo can work out what's actually in it. It was checked against the final code diff and commit history. That was a documentation review, not a new hardware test or a full export of my comma.
+I made the original changes with a mix of AI help and manual work, with plenty of edits and reversions along the way. This README is here so future me and anyone else looking through the repo can work out what's actually in it. It was checked against the final code diff and commit history, then cross-checked against a targeted parameter export and model-file checksums from my comma. This was a code and saved-configuration review, not a new hardware test or a full device image.
 
 ## What I'm running
 
@@ -17,7 +17,7 @@ I made the original changes with a mix of AI help and manual work, with plenty o
 | Last driving-code commit before this documentation | [`f4fbb5bc628da0f363e83c2b7c80e3793327eed3`](https://github.com/aeae1/openpilot/tree/f4fbb5bc628da0f363e83c2b7c80e3793327eed3), August 13, 2025 |
 | sunnypilot release baseline for the personal diff | [`e8de7d3fcd81d4d31c62ee2db53ebf76b7582ca8`](https://github.com/aeae1/openpilot/tree/e8de7d3fcd81d4d31c62ee2db53ebf76b7582ca8), `sunnypilot v0.9.6.1`, February 28, 2024 |
 | Selected driving model | **Blue Diamond v2 (December 12, 2023)**, `NLP+BDv2`, generation 1 |
-| OS version requested by this deployment's `launch_env.sh` | **AGNOS 9.6**; the device's installed OS was not independently read |
+| Installed OS | **AGNOS 9.6**, confirmed from the device's `/VERSION` file; this matches the version requested by `launch_env.sh` |
 | My vehicle | **2025 Chrysler Pacifica Hybrid** |
 | Historical vehicle label displayed by this build | `Chrysler Pacifica Hybrid 2019–23` |
 | Hardware | **comma 3X** |
@@ -42,7 +42,7 @@ The exact archive commit is [`70f4db9d01be4ceb3706c508484055f615e0fa0a`](https:/
 
 The archive branch descends directly from `f4fbb5b` and preserves its tracked files unchanged, adding only the backup folder. This retains the deployment's code and prebuilt dependencies as well as the custom model package. The model payloads are real Git blobs, not external-download links or LFS pointers.
 
-All three downloaded files matched sunnypilot's published SHA-256 checksums, and they were downloaded back from this GitHub archive and checked again. **The copies installed on my comma haven't been read or hash-compared yet.** So this is a verified copy of the published package, rather than an image of my device or a model training checkpoint. The archive's README and `manifest.json` explain what's included and what's still needed for a restore.
+All three downloaded files matched sunnypilot's published SHA-256 checksums, and they were downloaded back from this GitHub archive and checked again. **The September 28, 2026 device export also confirms that all three files installed on my comma match the archive in both byte count and SHA-256.** That means the backup matches the actual Blue Diamond runtime package on my device. It is still not a device image or a model training checkpoint. The pinned archive's README and `manifest.json` describe the original archival check, which happened before this device comparison; this README records the later verification.
 
 ## What I've changed
 
@@ -111,7 +111,7 @@ A lot of what I like was already in sunnypilot. These are existing features I've
 
 - **MADS:** independent management of lateral assistance and ACC, with Cruise Main and brake behavior options.
 - **Dynamic Lane Profile and custom offsets:** the legacy lane planner and its configurable camera/path biases.
-- **NNLC / `NNFF`:** neural-network feedforward in torque lateral control. The enabled NNLC setting can select torque tuning even with “Enforce Torque Lateral Control” off. Exact NNLC model matching depends on the vehicle and EPS firmware; the loaded model filename has not been read from this device.
+- **NNLC / `NNFF`:** neural-network feedforward in torque lateral control. The enabled NNLC setting can select torque tuning even with “Enforce Torque Lateral Control” off. Exact NNLC model matching depends on the vehicle and EPS firmware. The exported `NNFFCarModel` identifies the Pacifica model family, but this build strips the firmware suffix before saving that label, so it doesn't identify the full loaded model filename.
 - **Custom Stock Longitudinal:** manages the requested cruise speed through the vehicle's stock ACC interface. The Pacifica's factory system still performs the longitudinal actuation; this is not full openpilot longitudinal control.
 - **Vision-based turn speed control, nudgeless lane-change options, road-edge blocking, Quiet Drive, map/display options, and reverse driver-camera view.**
 
@@ -125,7 +125,7 @@ The UI describes a decreasing camera-offset value as biasing the car farther lef
 
 ## My current settings
 
-These are my current settings. **They haven't been made the installation defaults yet.** A parameter export is still needed to confirm the complete profile. Device identifiers, network details, credentials, and unrelated car-brand toggles are left out.
+These are my current settings. **They haven't been made the installation defaults yet.** A targeted parameter export now confirms the main driving and model settings, the installed OS, and the model-file checksums. It isn't an export of every parameter or of the offline map files. Device identifiers, network details, credentials, calibration, and unrelated car-brand toggles are left out.
 
 ### Driving and lane behavior
 
@@ -139,10 +139,12 @@ These are my current settings. **They haven't been made the installation default
 | MADS | On |
 | Toggle MADS with Cruise Main | On |
 | Enable ACC+MADS with RES+/SET− | Off |
-| Steering Mode After Braking | “Remain Active” appears selected; stored parameter still needs confirmation |
+| Steering Mode After Braking | Remain Active, confirmed by `DisengageLateralOnBrake=0` |
 | Disengage on accelerator | Off |
 | NNLC | On |
 | Enforce Torque Lateral Control | Off |
+| Custom Torque Lateral | Off |
+| Live Torque | Off |
 | Custom Stock Longitudinal | On |
 | Experimental Mode | Off |
 | Dynamic Experimental Control | Off |
@@ -196,6 +198,25 @@ These are my current settings. **They haven't been made the installation default
 | OSM region selection | United States / All States, approximately 4.8 GB listed |
 
 The map screen's “Calculating…” size display does not prove every selected map file was downloaded. Neither the offline map files nor a private navigation token are included in the model backup.
+
+### Saved values that matter for recovery
+
+The export records 82 requested preference keys: 64 have stored values and 18 are absent. An absent value is recorded as JSON `null`; that does not automatically mean a setting was lost. For example, this build reads `IsMetric` and `IsLdwEnabled` with `get_bool()`, which returns true only for the stored string `"1"`. Their absent values therefore mean imperial units and lane departure warning off. An eventual profile needs to handle each key according to its meaning, never write the literal text `null`, and preserve an explicit `"0"` as a real saved choice.
+
+Some numbers are menu codes rather than physical units. `MaxTimeOffroad=9` corresponds to 10,800 seconds, or three hours. The saved `LongitudinalPersonality=2` means Standard in this release; that setting alone doesn't establish how the Pacifica's factory ACC controls following distance. Disabled features also retain their own saved options. I want to preserve those preferences without accidentally enabling the feature, including the speed-limit options with `EnableSlc=0` and the torque values with `CustomTorqueLateral=0`.
+
+The actual saved driving-model selection is:
+
+| Parameter | Saved value |
+|---|---|
+| `CustomDrivingModel` | `1` |
+| `DrivingModelGeneration` | `1` |
+| `DrivingModelName` | `Blue Diamond v2 (December 12, 2023)` |
+| `DrivingModelText` | `blue-diamond-v2` |
+| `DrivingModelMetadataText` | `gen1` |
+| `NavModelText` | `gen1` |
+
+The saved vehicle selection is `CarModel=CHRYSLER PACIFICA HYBRID 2019`, with `CarModelText=Chrysler Pacifica Hybrid 2019-23`. These are the historical identifiers used by this build, not a change to my vehicle's actual model year. The export also reports the expected `release-c3` branch, `0.9.6.1-release` version, and `f4fbb5b` deployment commit. Those software-identification fields and the NNLC diagnostic label are evidence for this review, not user preferences to force onto a replacement device.
 
 ## Defaults and replacement-device recovery
 
