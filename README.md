@@ -1,33 +1,35 @@
-# aeae1pilot — a personal sunnypilot setup
+# aeae1pilot — my sunnypilot setup
 
-This repository preserves a personal sunnypilot setup used with a **2025 Chrysler Pacifica Hybrid and a comma 3X**. The owner likes its current driving behavior: **Blue Diamond v2**, a **Laneful** profile, **NNLC**, and a side-mounted camera using the legacy **−20 cm camera offset**. Preserving that behavior is the project's priority.
+This is my personal sunnypilot fork for my **2025 Chrysler Pacifica Hybrid and comma 3X**. I'm really happy with how it drives. I'm running **Blue Diamond v2**, a **Laneful** profile, and **NNLC**, with my camera mounted off to the side and the legacy **camera offset set to −20 cm**. I like the camera there, and I like the behavior I've ended up with.
 
-The active personal deployment is **[`release-c3`](https://github.com/aeae1/openpilot/tree/release-c3)**. GitHub's default branch, `master`, is a different historical source tree. **This README documents `release-c3`, including when viewed on `master`; do not assume the surrounding code on `master` implements these personal changes.**
+The setup is pretty much frozen in time, and I'm fine with that. I'm curious whether newer driving models might feel a little nicer, but I don't feel a need to upgrade just for a newer version number. My priority is to preserve what I already like and make any future changes deliberately.
 
-This documentation was audited on **September 28, 2026**, using the final code diff, commit history, and the owner's settings photos. It describes the resulting code, including changes that the former short README omitted. It does not imply a new hardware test or an export of the device's complete state.
+**The branch I actually use is [`release-c3`](https://github.com/aeae1/openpilot/tree/release-c3).** GitHub's default branch, `master`, is a different historical source tree. This README describes `release-c3` even when you're reading it on `master`; the surrounding code on `master` doesn't contain the same personal changes.
 
-## Versions and preserved baseline
+I made the original changes with a mix of AI help and manual work, with plenty of edits and reversions along the way. This README is here so future me—and anyone else looking through the repo—can work out what's actually in it. It was checked against the final code diff, commit history, and my settings photos on **September 28, 2026**. That was a documentation review, not a new hardware test or a full export of my comma.
+
+## What I'm running
 
 | Item | Recorded value |
 |---|---|
-| Personal deployment branch | `release-c3` |
+| Branch I use | `release-c3` |
 | Software version | `0.9.6.1-release` |
 | Last driving-code commit before this documentation | [`f4fbb5bc628da0f363e83c2b7c80e3793327eed3`](https://github.com/aeae1/openpilot/tree/f4fbb5bc628da0f363e83c2b7c80e3793327eed3), August 13, 2025 |
 | sunnypilot release baseline for the personal diff | [`e8de7d3fcd81d4d31c62ee2db53ebf76b7582ca8`](https://github.com/aeae1/openpilot/tree/e8de7d3fcd81d4d31c62ee2db53ebf76b7582ca8), `sunnypilot v0.9.6.1`, February 28, 2024 |
 | Selected driving model shown in photos | **Blue Diamond v2 (December 12, 2023)**, `NLP+BDv2`, generation 1 |
 | OS version requested by this deployment's `launch_env.sh` | **AGNOS 9.6**; the device's installed OS was not independently read |
-| Vehicle used by the owner | **2025 Chrysler Pacifica Hybrid** |
+| My vehicle | **2025 Chrysler Pacifica Hybrid** |
 | Historical vehicle label displayed by this build | `Chrysler Pacifica Hybrid 2019–23` |
 | Hardware | **comma 3X** |
 | Default `master` branch before this documentation | `c53c90f7fac73a9ba7dad81bf9c349535651bf6d`, May 8, 2024, version `0.9.7.0`; not the personal deployment |
 
-The software, model, and personal edits have different dates. A 2025 commit does not make the underlying release or selected driving model a 2025 version. The old vehicle label is retained from the platform definition; it is not a claim that this fork has a separately validated 2025 vehicle port.
+There are a few different ages here: the driving model is from 2023, the sunnypilot baseline is from 2024, and my last driving-code edits were in 2025. The old `2019–23` vehicle label comes from the platform definition. I'm using this with my 2025 Pacifica, but that doesn't amount to a separately validated 2025 vehicle port.
 
-The deployment includes `prebuilt`, a compiled `selfdrive/ui/ui`, compiled model runners, and other release binaries. Much of the matching C++ UI source is absent. Editing the unrelated `master` tree is not a reliable way to rebuild this exact UI.
+This is a prebuilt release: it includes `prebuilt`, a compiled `selfdrive/ui/ui`, compiled model runners, and other release binaries. Much of the matching C++ UI source isn't here. If I want to change the UI later, I'll need to recover the matching source; grabbing the unrelated `master` tree isn't enough to recreate this exact build.
 
 ## Blue Diamond v2 backup
 
-The **[Blue Diamond v2 archive](https://github.com/aeae1/openpilot/tree/backup/blue-diamond-v2-2026-09-28/backups/blue-diamond-v2)** preserves the complete three-file runtime package, its original catalog, SHA-256 checksums, and a compatibility manifest.
+I wanted a copy of Blue Diamond that I could keep even if the original download disappeared. The **[Blue Diamond v2 archive](https://github.com/aeae1/openpilot/tree/backup/blue-diamond-v2-2026-09-28/backups/blue-diamond-v2)** has the complete three-file runtime package, its original catalog, SHA-256 checksums, and a compatibility manifest.
 
 The exact archive commit is [`70f4db9d01be4ceb3706c508484055f615e0fa0a`](https://github.com/aeae1/openpilot/tree/70f4db9d01be4ceb3706c508484055f615e0fa0a/backups/blue-diamond-v2).
 
@@ -40,21 +42,23 @@ The exact archive commit is [`70f4db9d01be4ceb3706c508484055f615e0fa0a`](https:/
 
 The archive branch descends directly from `f4fbb5b` and preserves its tracked files unchanged, adding only the backup folder. This retains the deployment's code and prebuilt dependencies as well as the custom model package. The model payloads are real Git blobs, not external-download links or LFS pointers.
 
-All three downloaded payloads matched sunnypilot's published SHA-256 checksums. This establishes a verified copy of the published Blue Diamond v2 package. **The installed files on the owner's comma have not been read or hash-compared.** The archive is not a device disk image or model training checkpoint. See its README and `manifest.json` for verification and restoration boundaries.
+All three downloaded files matched sunnypilot's published SHA-256 checksums, and they were downloaded back from this GitHub archive and checked again. **The copies installed on my comma haven't been read or hash-compared yet.** So this is a verified copy of the published package, rather than an image of my device or a model training checkpoint. The archive's README and `manifest.json` explain what's included and what's still needed for a restore.
 
-## Personal code modifications
+## What I've changed
 
-The authoritative comparison is [`e8de7d3…f4fbb5b`](https://github.com/aeae1/openpilot/compare/e8de7d3fcd81d4d31c62ee2db53ebf76b7582ca8...f4fbb5bc628da0f363e83c2b7c80e3793327eed3). Before the documentation update, the final net diff affected five runtime Python files and the README. Earlier experiments that were subsequently reverted are not additional active features.
+The comparison to use is [`e8de7d3…f4fbb5b`](https://github.com/aeae1/openpilot/compare/e8de7d3fcd81d4d31c62ee2db53ebf76b7582ca8...f4fbb5bc628da0f363e83c2b7c80e3793327eed3). My final changes before this documentation update touched five runtime Python files and the README. The history has a lot more activity than that because I tried things and reverted them. The list below describes what actually survived.
 
 ### 1. Cruise-speed ceiling and button increments
+
+I wanted the cruise buttons to land on sensible numbers. The old behavior could turn an intended 85 → 90 mph adjustment into 85 → 89, then 94. There were several attempts at fixing that; this is where the code ended up.
 
 In [`selfdrive/controls/lib/drive_helpers.py`](https://github.com/aeae1/openpilot/blob/f4fbb5bc628da0f363e83c2b7c80e3793327eed3/selfdrive/controls/lib/drive_helpers.py):
 
 - `V_CRUISE_MAX` is **161 km/h**, raised from 145 km/h. That is approximately **100 mph**, not an unlimited cruise speed. This is the software setpoint ceiling; it does not prove that factory ACC accepts every requested speed.
 - Imperial increments use the exact `CV.MPH_TO_KPH` conversion, **1.609344**, instead of 1.6.
 - Small adjustments are **1 mph**; large adjustments are **5 mph**. Metric adjustments remain 1 km/h and 10 km/h.
-- Large adjustments snap toward the next interval boundary when off-grid. An interval-relative tolerance handles values already near a boundary. This is the final implementation of the owner's “85 → 89 / 94” correction.
-- With the owner's **ACC Long Press Reverse ON**, a short press requests the large adjustment and a long press requests the small adjustment.
+- Large adjustments snap toward the next interval boundary when off-grid. An interval-relative tolerance handles values already near a boundary. This is the final implementation of my “85 → 89 / 94” correction.
+- I keep **ACC Long Press Reverse ON**, so a short press requests the large adjustment and a long press requests the small adjustment.
 - Speed changes are ignored in Park, Reverse, and Neutral. The code also ignores an adjustment below 0.5 m/s when the setpoint is unset, preserves the setpoint when resuming from cruise standstill, and avoids treating a button press that enabled cruise as another adjustment.
 - The existing gas-override lower bound and final min/max clipping remain.
 
@@ -68,7 +72,7 @@ In [`selfdrive/car/interfaces.py`](https://github.com/aeae1/openpilot/blob/f4fbb
 - When cruise availability transitions from available to unavailable, the method clears its initialization flags and returns `False`.
 - `get_sp_common_state()` no longer uses the original gear, open-door, and seatbelt checks to set `gear_allowed=False`. It assigns **`cs_out.latActive=True`** instead.
 
-The owner's goal was to keep the chosen MADS state through parking and related interruptions. **The implementation changes lateral eligibility as well as retaining the selection.** Describing it solely as “remember the toggle” would be incomplete. These edits are in the shared interface, not a Chrysler-only wrapper.
+I wanted MADS to stay selected when I put it on, including through parking and related interruptions. There is more going on in the code than remembering a toggle, though: **this implementation also changes lateral eligibility.** Those edits live in the shared interface, so their scope extends beyond Chrysler.
 
 This assignment does not mean steering is physically active at every speed or in every situation. `controlsd.py` still combines it with MADS state, minimum speed/standstill, brake behavior, steering faults, calibration, and other conditions. The Chrysler controller and panda also have their own constraints.
 
@@ -83,7 +87,7 @@ In [`selfdrive/controls/lib/events.py`](https://github.com/aeae1/openpilot/blob/
 | `espDisabled` | `SOFT_DISABLE` entry commented out | `NO_ENTRY` alert |
 | `speedTooHigh` | `WARNING` and `NO_ENTRY` entries commented out | Neither of those entries is active |
 
-The former README's “no warnings about seatbelt/door” was too broad: the no-entry definitions remain. These are changes to event handling, including disengagement/entry behavior, rather than just a quieter visual theme. The high-speed event change does not alter the model's training or demonstrate reliable performance at a higher speed.
+My old README said “no warnings about seatbelt/door,” which was too broad: the no-entry definitions are still there. These edits affect disengagement and entry behavior, so they deserve a more precise description than “fewer warnings.” Removing the high-speed event also doesn't change what the model was trained on or establish that it performs reliably at a higher speed.
 
 ### 4. NNLC loaded-notification suppression
 
@@ -95,13 +99,13 @@ In [`system/version.py`](https://github.com/aeae1/openpilot/blob/f4fbb5bc628da0f
 
 ### Scope of the final changes
 
-The final personal diff has **no net changes to the Chrysler-specific controller/interface/CAN files, panda safety files, or driver-monitoring code** relative to the stated sunnypilot baseline. Historical Chrysler experiments were reverted. This does not negate the shared-interface and event-handling changes described above, and it is not a safety-equivalence claim.
+After the reversions, my final diff has **no net changes to the Chrysler-specific controller/interface/CAN files, panda safety files, or driver-monitoring code** relative to the sunnypilot baseline above. The shared-interface and event-handling changes are still present, so this doesn't mean the fork behaves identically to upstream.
 
-This is a personal fork with explicit behavioral departures from its upstream release. Other users should evaluate the actual code and their own hardware rather than treat the owner's satisfaction as general vehicle validation. Normal driver supervision remains necessary.
+I like how this works in my car. That is my experience, not validation for everyone else's vehicle. If you're considering using it, read the actual changes above and evaluate them for your hardware. Normal driver supervision is still required.
 
-## Inherited features that shape this setup
+## Features I use that came from sunnypilot
 
-The following are sunnypilot features configured by the owner, rather than newly written personal modifications:
+A lot of what I like was already in sunnypilot. These are existing features I've configured, so I don't want to take credit for writing them:
 
 - **MADS:** independent management of lateral assistance and ACC, with Cruise Main and brake behavior options.
 - **Dynamic Lane Profile and custom offsets:** the legacy lane planner and its configurable camera/path biases.
@@ -113,13 +117,13 @@ Blue Diamond v2 is the **driving model**, while the NNLC files are separate **st
 
 ### Why the offset and model combination matters
 
-The selected profile is **Laneful**, with **Custom Offsets ON**, **Camera Offset −20 cm**, and **Path Offset 0 cm**. In this release, camera offset is read as an integer number of centimeters and applied to the predicted lane-line coordinates. Path offset is applied to the model path before blending. Lane confidence and width still affect how strongly the planner follows the lane-derived path.
+I use **Laneful**, with **Custom Offsets ON**, **Camera Offset −20 cm**, and **Path Offset 0 cm**. That combination matters to the behavior I want to keep. In this release, camera offset is read as an integer number of centimeters and applied to the predicted lane-line coordinates. Path offset is applied to the model path before blending. Lane confidence and width still affect how strongly the planner follows the lane-derived path.
 
 The UI describes a decreasing camera-offset value as biasing the car farther left. This is the legacy lane-planner adjustment used by this setup. It is not a universal mounting calibration, and a newer setting with the same name may use a different implementation, sign convention, or model path. Do not transfer the numerical value between generations without checking the code.
 
-## Owner's photographed preferences
+## My current settings
 
-**These are observed preferences, not programmed installation defaults.** They describe the owner's photos supplied for this review, not a complete parameter export. The tables omit device identifiers, local network details, account credentials, and unrelated car-brand toggles.
+These are my settings as transcribed from the photos I supplied for this review. **They haven't been made the installation defaults yet**, and the photos aren't a complete parameter export. Where a photo was unclear, that's called out rather than guessed. Device identifiers, network details, credentials, and unrelated car-brand toggles are left out.
 
 ### Driving and lane behavior
 
@@ -193,9 +197,11 @@ The map screen's “Calculating…” size display does not prove every selected
 
 ## Defaults and replacement-device recovery
 
-The current `selfdrive/manager/manager.py` seeds its existing defaults only when a parameter is absent. It does **not** currently seed the owner's full profile. Examples of differences are:
+If my comma ever needs replacing, I'd like to wipe a new or used comma 3X, load my repo, and get my familiar setup back without hunting through every menu. **That recovery behavior isn't implemented yet.**
 
-| Preference | Current code default | Owner's observed selection |
+Right now, `selfdrive/manager/manager.py` fills in its existing defaults when a parameter is missing. Those defaults don't reproduce all of my preferences. For example:
+
+| Preference | Current code default | My selection |
 |---|---|---|
 | `AccMadsCombo` | `1` / On | `0` / Off |
 | `DynamicLaneProfile` | `1` / Laneless | `0` / Laneful |
@@ -210,19 +216,19 @@ The current `selfdrive/manager/manager.py` seeds its existing defaults only when
 | `ShowDebugUI` | `1` / On | `0` / Off |
 | `FeatureStatus` | `1` / On | `0` / Off |
 
-A fresh clone alone therefore does not reproduce the owner's setup. The custom driving-model files normally live outside the Git checkout at `/data/media/0/models`; model selection and most preferences live in the device's parameter store.
+A fresh clone alone won't bring back my whole setup. The custom driving-model files normally live outside the Git checkout at `/data/media/0/models`; model selection and most preferences live in the device's parameter store.
 
-The agreed **future design**, still unimplemented, is to apply a named personal profile on a clean installation, preserve later manual adjustments during ordinary boots, and offer an explicit “Restore My Setup” action to reapply it. A replacement used comma is assumed to be wiped first. Device identity, registration, credentials, calibration, and learned values should belong to that replacement device rather than be blindly copied from the old one.
+The **future behavior I want** is a named personal profile that applies on a clean installation, leaves any later menu adjustments alone during ordinary boots, and can be reapplied with an explicit “Restore My Setup” action. If I'm using a secondhand comma, I'm assuming it gets wiped first. Device identity, registration, credentials, calibration, and learned values need to belong to the replacement device instead of being blindly copied from the old one.
 
 For an eventual restoration, preserve the exact deployment identity, obtain the matching three model files and verify their checksums, confirm model selection, reapply the documented preferences, and complete the replacement device's own setup/calibration. The archive README records the loader's required parameters. **No automatic restore procedure or clean-device installation has been implemented or tested as part of this documentation/backup work.**
 
 ## Lead marker and speed-display idea
 
-A calmer lead marker with one readable speed value was discussed, but is **not implemented**. The owner's requirement is a trustworthy measured speed, not a smoothed estimate that merely looks precise.
+I'd considered a calmer lead-car marker with one readable speed value on it. The full screen of metrics is more clutter than I want; I'd mostly just like to see how fast the car ahead is going. But I want a speed I can actually trust. A smooth-looking number isn't enough, so this idea is **paused and not implemented**.
 
-In this branch, `selfdrive/car/chrysler/interface.py` sets **`radarUnavailable=True`**. This means the openpilot lead-processing path does not receive usable radar tracks through this port; it does not mean the Pacifica lacks radar or that its factory ACC stops using radar. The vision fallback derives lead speed from the driving model and ego-speed information. Smoothing its marker or rounding its digits would improve appearance without establishing measurement accuracy. This feature remains paused unless a reliable source can be demonstrated.
+In this branch, `selfdrive/car/chrysler/interface.py` sets **`radarUnavailable=True`**. The Pacifica still has radar and uses it for factory ACC, but this openpilot port doesn't supply usable radar tracks to its lead-processing path. Its vision fallback estimates lead speed from the driving model and ego-speed information. Smoothing the marker or rounding the digits would make it look nicer without establishing accuracy. Unless a reliable source can be demonstrated, I'd rather leave this feature out.
 
-## Maintenance notes
+## Notes for future me, or anyone working on this
 
 - Compare against the pinned baseline when auditing personal modifications. Commit messages include experiments and reversions, so counting historical edits overstates the final changes.
 - Keep the model/metadata/navigation-model combination together. The stock bundled `supercombo.thneed` is not the custom Blue Diamond v2 file.
@@ -233,6 +239,6 @@ In this branch, `selfdrive/car/chrysler/interface.py` sets **`radarUnavailable=T
 
 ## Attribution and license
 
-This fork builds on [sunnypilot](https://github.com/sunnypilot/sunnypilot), [comma's openpilot](https://github.com/commaai/openpilot), and their contributors, including the authors of the inherited NNLC, mapping, vehicle-support, and UI features. Personal changes are maintained by **aeae1**. Much of the original work involved both AI assistance and manual editing; this README records the final code behavior rather than assigning authorship to individual edits.
+Most of this project comes from [sunnypilot](https://github.com/sunnypilot/sunnypilot), [comma's openpilot](https://github.com/commaai/openpilot), and their contributors, including the people behind the NNLC, mapping, vehicle-support, and UI features. I'm **aeae1**, and the personal changes described here are mine, made with AI assistance and manual editing. This README is meant to explain the result clearly, including the parts my earlier notes didn't capture well.
 
 The repository's existing [LICENSE](LICENSE) and third-party notices remain unchanged. Model provenance is recorded in the backup manifest, and archiving the artifacts does not relicense them. Historical upstream information remains in `CHANGELOGS.md` and `RELEASES.md`; those files describe upstream releases and should not be read as a list of personal modifications.
