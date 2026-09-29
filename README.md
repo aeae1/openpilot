@@ -318,6 +318,7 @@ In this branch, `selfdrive/car/chrysler/interface.py` sets **`radarUnavailable=T
 
 ## Notes for future me, or anyone working on this
 
+- The [September 2026 branch cleanup record](https://github.com/aeae1/openpilot/blob/master/backups/branch-cleanup-2026-09-29/README.md) records the 42 old branches preserved as archive tags. The active branch list keeps `master`, `pacifica`, `release-c3`, and the Blue Diamond backup. All vehicle-support and deployment files were retained.
 - Compare against the pinned baseline when auditing personal modifications. Commit messages include experiments and reversions, so counting historical edits overstates the final changes.
 - Keep the model/metadata/navigation-model combination together. The stock bundled `supercombo.thneed` is not the custom Blue Diamond v2 file.
 - Recover the source matching the prebuilt release before attempting UI changes. The default branch is not a substitute for that investigation.
