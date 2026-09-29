@@ -8,7 +8,7 @@ from openpilot.common.basedir import BASEDIR
 from openpilot.common.swaglog import cloudlog
 
 RELEASE_BRANCHES = ['release3-staging', 'release3', 'nightly']
-RELEASE_SP_BRANCHES = ['release-c3']
+RELEASE_SP_BRANCHES = ['release-c3', 'pacifica']
 TESTED_BRANCHES = RELEASE_BRANCHES + RELEASE_SP_BRANCHES + ['devel', 'devel-staging', 'staging-c3']
 
 training_version: bytes = b"0.2.0"

@@ -14,6 +14,7 @@ from openpilot.common.text_window import TextWindow
 from openpilot.system.hardware import HARDWARE, PC
 from openpilot.selfdrive.manager.helpers import unblock_stdout, write_onroad_params, save_bootlog
 from openpilot.selfdrive.manager.mapd_installer import VERSION
+from openpilot.selfdrive.manager.pacifica_setup import initialize as initialize_pacifica, is_clean_install
 from openpilot.selfdrive.manager.process import ensure_running
 from openpilot.selfdrive.manager.process_config import managed_processes
 from openpilot.selfdrive.athena.registration import register, UNREGISTERED_DONGLE_ID, is_registered_device
@@ -27,11 +28,17 @@ def manager_init() -> None:
   save_bootlog()
 
   params = Params()
+  pacifica_setup_enabled = not PC and get_short_branch() == "pacifica"
+  # Capture existing-install evidence before lifecycle cleanup can remove it.
+  pacifica_clean_install = pacifica_setup_enabled and is_clean_install(params)
   params.clear_all(ParamKeyType.CLEAR_ON_MANAGER_START)
   params.clear_all(ParamKeyType.CLEAR_ON_ONROAD_TRANSITION)
   params.clear_all(ParamKeyType.CLEAR_ON_OFFROAD_TRANSITION)
   if is_release_branch():
     params.clear_all(ParamKeyType.DEVELOPMENT_ONLY)
+
+  if pacifica_setup_enabled:
+    cloudlog.info("Pacifica setup: %s", initialize_pacifica(params, pacifica_clean_install))
 
   default_params: List[Tuple[str, Union[str, bytes]]] = [
     ("CompletedTrainingVersion", "0"),

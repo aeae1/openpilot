@@ -2,9 +2,45 @@
 
 This is my personal sunnypilot fork for my **2025 Chrysler Pacifica Hybrid and comma 3X**. I'm really happy with how it drives. I'm running **Blue Diamond v2**, a **Laneful** profile, and **NNLC**, with my camera mounted off to the side and the legacy **camera offset set to −20 cm**. I like the camera there, and I like the behavior I've ended up with.
 
+## Install my Pacifica setup on a new comma 3X
+
+**Use the `pacifica` branch for a new or wiped replacement device.** It contains my frozen driving setup, the verified Blue Diamond v2 files, and automatic first-install preferences. My current comma still runs `release-c3`; publishing `pacifica` doesn't switch it over.
+
+1. Connect the replacement comma 3X to reliable power and Wi-Fi. For a used device, wipe the previous setup first using its factory-reset/uninstall procedure.
+2. On the setup screen, choose **Custom Software**.
+3. Try these installation addresses in order:
+
+| Order | Installer | Enter on the comma |
+|---|---|---|
+| **1. Try this first** | Shane Smiskol | [smiskol.com/fork/aeae1/pacifica](https://smiskol.com/fork/aeae1/pacifica) |
+| **2. If that installer fails** | comma's installer | [installer.comma.ai/aeae1/pacifica](https://installer.comma.ai/aeae1/pacifica) |
+
+Both addresses select the **same `pacifica` branch**. They are alternate ways to download it; changing the installer service won't fix a problem in the installed software itself. There is no separately published custom installer binary.
+
+4. Let the downloads and any required OS installation finish. This frozen software requests **AGNOS 9.6**, including when the replacement currently has a newer OS.
+5. On a clean installation, startup verifies and installs all three bundled Blue Diamond files and applies [my saved profile](https://github.com/aeae1/openpilot/blob/pacifica/pacifica/profile.json). There is no separate Blue Diamond download or model-menu selection required.
+6. Complete the device's normal onboarding and its own calibration, and pair it with my account if needed. Wi-Fi credentials, SSH keys, device identity, calibration, and learned values aren't copied from the old comma.
+
+The intended first-run selections are **Blue Diamond v2, Laneful, Camera Offset −20 cm, Path Offset 0 cm, NNLC on**, and the preferences documented below. The offset is specific to my existing car/mount arrangement; a replacement still needs its own calibration.
+
+**Validation status:** the initialization logic and real model checksums are tested in software. A full new-device installation, the ARM model runners, the live generated installers, and the OS downgrade have not been verified on a replacement comma 3X. The installer URL formats are [documented by Smiskol](https://github.com/sshane/openpilot-installer-generator) and [comma](https://github.com/commaai/openpilot-release-archive/blob/devel/README.md). This workspace could not reach the installer binaries or legacy OS download URLs, so their live availability is not claimed.
+
+If an OS downgrade leaves startup stuck at registration, check Wi-Fi: comma has [documented a network-configuration issue when downgrading AGNOS](https://github.com/commaai/agnos-builder/issues/423). That's a separate issue from Blue Diamond or the preference profile. For a device that cannot reach normal setup, comma's official factory reflashing route is [flash.comma.ai](https://flash.comma.ai/); it is not an image of my personal setup or a claim that it installs AGNOS 9.6.
+
+### Fall back to my original setup
+
+If I need the original frozen software instead of the new installation support, use **`release-c3`**, not `release3`:
+
+| Order | Original-version installer |
+|---|---|
+| **1. Smiskol** | [smiskol.com/fork/aeae1/release-c3](https://smiskol.com/fork/aeae1/release-c3) |
+| **2. comma** | [installer.comma.ai/aeae1/release-c3](https://installer.comma.ai/aeae1/release-c3) |
+
+This installs the original software, **without automatic Blue Diamond or preference restoration**. Finish onboarding, select/download **Blue Diamond v2 (December 12, 2023)** in its driving-model menu, then reapply the settings below. If the original model download is unavailable, the [pinned archive](https://github.com/aeae1/openpilot/tree/70f4db9d01be4ceb3706c508484055f615e0fa0a/backups/blue-diamond-v2) contains the three files, their checksums, the required model directory, and the six selection values documented in this README. A manual restore of those files/values requires parked-device SSH/SFTP access and a reboot before use. No custom installer is provided for the old branch.
+
 The setup is pretty much frozen in time, and I'm fine with that. I'm curious whether newer driving models might feel a little nicer, but I don't feel a need to upgrade just for a newer version number. My priority is to preserve what I already like and make any future changes deliberately.
 
-**The branch I actually use is [`release-c3`](https://github.com/aeae1/openpilot/tree/release-c3).** GitHub's default branch, `master`, is a different historical source tree. This README describes `release-c3` even when you're reading it on `master`; the surrounding code on `master` doesn't contain the same personal changes.
+**The branch on my current device is [`release-c3`](https://github.com/aeae1/openpilot/tree/release-c3).** The new [`pacifica`](https://github.com/aeae1/openpilot/tree/pacifica) branch adds first-install setup to that same driving-code baseline. GitHub's default branch, `master`, is a different historical source tree. This README documents both of my deployment branches even when viewed on `master`; the surrounding code on `master` doesn't contain these changes.
 
 I made the original changes with a mix of AI help and manual work, with plenty of edits and reversions along the way. This README is here so future me and anyone else looking through the repo can work out what's actually in it. It was checked against the final code diff and commit history, then cross-checked against a targeted parameter export and model-file checksums from my comma. This was a code and saved-configuration review, not a new hardware test or a full device image.
 
@@ -40,7 +76,7 @@ The exact archive commit is [`70f4db9d01be4ceb3706c508484055f615e0fa0a`](https:/
 | `supercombo_metadata_gen1.pkl` | 727 bytes |
 | **Total model package** | **52,867,509 bytes (52.87 MB / 50.42 MiB)** |
 
-The archive branch descends directly from `f4fbb5b` and preserves its tracked files unchanged, adding only the backup folder. This retains the deployment's code and prebuilt dependencies as well as the custom model package. The model payloads are real Git blobs, not external-download links or LFS pointers.
+The archive branch descends directly from `f4fbb5b` and preserves its tracked files unchanged, adding only the backup folder. This retains the deployment's code and prebuilt dependencies as well as the custom model package. The model payloads are real Git blobs, not external-download links or LFS pointers. The same three payloads are also included directly in `pacifica/models` on the `pacifica` installation branch, so cloning that branch includes the model package.
 
 All three downloaded files matched sunnypilot's published SHA-256 checksums, and they were downloaded back from this GitHub archive and checked again. **The September 28, 2026 device export also confirms that all three files installed on my comma match the archive in both byte count and SHA-256.** That means the backup matches the actual Blue Diamond runtime package on my device. It is still not a device image or a model training checkpoint. The pinned archive's README and `manifest.json` describe the original archival check, which happened before this device comparison; this README records the later verification.
 
@@ -125,7 +161,7 @@ The UI describes a decreasing camera-offset value as biasing the car farther lef
 
 ## My current settings
 
-These are my current settings. **They haven't been made the installation defaults yet.** A targeted parameter export now confirms the main driving and model settings, the installed OS, and the model-file checksums. It isn't an export of every parameter or of the offline map files. Device identifiers, network details, credentials, calibration, and unrelated car-brand toggles are left out.
+These are my current settings. **The captured driving and display preferences are the first-install defaults on `pacifica`. Existing installations keep their own values, and `release-c3` keeps its original defaults.** The tables also record map information from the old device; downloaded maps and their selection are not recreated by the preference profile. A targeted parameter export confirms the main driving and model settings, the installed OS, and the model-file checksums. It isn't an export of every parameter or of the offline map files. Device identifiers, network details, credentials, calibration, and unrelated car-brand toggles are left out.
 
 ### Driving and lane behavior
 
@@ -199,11 +235,11 @@ These are my current settings. **They haven't been made the installation default
 
 The map screen's “Calculating…” size display does not prove every selected map file was downloaded. Neither the offline map files nor a private navigation token are included in the model backup.
 
-### Saved values that matter for recovery
+### Saved values that matter for a replacement device
 
-The export records 82 requested preference keys: 64 have stored values and 18 are absent. An absent value is recorded as JSON `null`; that does not automatically mean a setting was lost. For example, this build reads `IsMetric` and `IsLdwEnabled` with `get_bool()`, which returns true only for the stored string `"1"`. Their absent values therefore mean imperial units and lane departure warning off. An eventual profile needs to handle each key according to its meaning, never write the literal text `null`, and preserve an explicit `"0"` as a real saved choice.
+The export records 82 requested preference keys: 64 have stored values and 18 are absent. An absent value is recorded as JSON `null`; that does not automatically mean a setting was lost. For example, this build reads `IsMetric` and `IsLdwEnabled` with `get_bool()`, which returns true only for the stored string `"1"`. Their absent values therefore mean imperial units and lane departure warning off. The `pacifica` profile records those absent off/zero settings as explicit `"0"` strings for a clean install or an explicit restore. It never writes the literal text `null` or fills missing settings on an existing installation. An explicit `"0"` is a real saved choice.
 
-Some numbers are menu codes rather than physical units. `MaxTimeOffroad=9` corresponds to 10,800 seconds, or three hours. The saved `LongitudinalPersonality=2` means Standard in this release; that setting alone doesn't establish how the Pacifica's factory ACC controls following distance. Disabled features also retain their own saved options. I want to preserve those preferences without accidentally enabling the feature, including the speed-limit options with `EnableSlc=0` and the torque values with `CustomTorqueLateral=0`.
+Some numbers are menu codes rather than physical units. `MaxTimeOffroad=9` corresponds to 10,800 seconds, or three hours. The saved `LongitudinalPersonality=2` means Standard in this release; that setting alone doesn't establish how the Pacifica's factory ACC controls following distance. Disabled features also retain their own saved options. The profile preserves those preferences without enabling the feature, including the speed-limit options with `EnableSlc=0` and the torque values with `CustomTorqueLateral=0`.
 
 The actual saved driving-model selection is:
 
@@ -218,13 +254,13 @@ The actual saved driving-model selection is:
 
 The saved vehicle selection is `CarModel=CHRYSLER PACIFICA HYBRID 2019`, with `CarModelText=Chrysler Pacifica Hybrid 2019-23`. These are the historical identifiers used by this build, not a change to my vehicle's actual model year. The export also reports the expected `release-c3` branch, `0.9.6.1-release` version, and `f4fbb5b` deployment commit. Those software-identification fields and the NNLC diagnostic label are evidence for this review, not user preferences to force onto a replacement device.
 
-## Defaults and replacement-device recovery
+## Defaults and replacement-device setup
 
-If my comma ever needs replacing, I'd like to wipe a new or used comma 3X, load my repo, and get my familiar setup back without hunting through every menu. **That recovery behavior isn't implemented yet.**
+I want to wipe a replacement comma 3X, install `pacifica`, and get my familiar setup back without hunting through every menu. The branch implements that first-install behavior with [a versioned profile](https://github.com/aeae1/openpilot/blob/pacifica/pacifica/profile.json), [bundled models](https://github.com/aeae1/openpilot/tree/pacifica/pacifica/models), and [a small startup helper](https://github.com/aeae1/openpilot/blob/pacifica/selfdrive/manager/pacifica_setup.py).
 
-Right now, `selfdrive/manager/manager.py` fills in its existing defaults when a parameter is missing. Those defaults don't reproduce all of my preferences. For example:
+The inherited `selfdrive/manager/manager.py` defaults remain unchanged. On a clean `pacifica` installation, my profile runs before that default-seeding loop. On `release-c3`, only the original defaults apply. For example:
 
-| Preference | Current code default | My selection |
+| Preference | Inherited default | My selection |
 |---|---|---|
 | `AccMadsCombo` | `1` / On | `0` / Off |
 | `DynamicLaneProfile` | `1` / Laneless | `0` / Laneful |
@@ -239,11 +275,40 @@ Right now, `selfdrive/manager/manager.py` fills in its existing defaults when a 
 | `ShowDebugUI` | `1` / On | `0` / Off |
 | `FeatureStatus` | `1` / On | `0` / Off |
 
-A fresh clone alone won't bring back my whole setup. The custom driving-model files normally live outside the Git checkout at `/data/media/0/models`; model selection and most preferences live in the device's parameter store.
+Custom model files still run from `/data/media/0/models`. The `pacifica` branch copies its bundled payloads there during initialization; it doesn't change the existing model loader or use the old model-download website for that step.
 
-The **future behavior I want** is a named personal profile that applies on a clean installation, leaves any later menu adjustments alone during ordinary boots, and can be reapplied with an explicit “Restore My Setup” action. If I'm using a secondhand comma, I'm assuming it gets wiped first. Device identity, registration, credentials, calibration, and learned values need to belong to the replacement device instead of being blindly copied from the old one.
+| Situation | What the new helper does |
+|---|---|
+| Clean, wiped installation | Verify the bundle, install its three files, and apply 82 preference values plus six model-selection values |
+| Any existing driving preference, model selection, installation identity, calibration, or completed onboarding is found | Leave the existing configuration alone, including missing settings |
+| Completed profile setup on a later boot | Do nothing; later menu adjustments and other model selections stay in place |
+| Missing profile marker on an existing installation | Preserve the existing setup; a missing marker does not authorize a reset |
+| Interrupted initial setup or explicit restore | Resume the pending transaction before default seeding or model-process preparation |
+| Bad/missing payload, failed write, invalid journal, or a profile changed mid-install | Stop startup with an error; never silently substitute a different driving model |
 
-For an eventual restoration, preserve the exact deployment identity, obtain the matching three model files and verify their checksums, confirm model selection, reapply the documented preferences, and complete the replacement device's own setup/calibration. The archive README records the loader's required parameters. **No automatic restore procedure or clean-device installation has been implemented or tested as part of this documentation/backup work.**
+The helper captures existing-install evidence before manager's lifecycle cleanup. It validates every profile key against the existing compiled Params library, verifies the complete source model package, writes a durable pending journal, installs each payload using a verified temporary file and atomic rename, then writes and reads back the saved parameters. `CustomDrivingModel` is written last. Only after successful verification is the journal marked complete. A multi-file restore is not one atomic filesystem operation; the pending journal and startup ordering prevent driving processes from using a partially applied setup.
+
+The journal lives at `/data/pacifica_setup/state.json`, outside the compiled parameter registry. No UI or native-library rebuild is needed. The existing UI, model runners, driving controllers, and panda files are unchanged. `pacifica` is explicitly classified the same way as `release-c3` for the release-dependent behavior and startup alert; this is compatibility bookkeeping, not an endorsement from comma or sunnypilot.
+
+### Explicitly restore my saved preferences later
+
+Normal installation needs no SSH commands. If I deliberately want to undo my later adjustments, I can connect through SSH **while parked with the car off and the offroad screen showing**, then run:
+
+```sh
+cd /data/openpilot
+python3 tools/pacifica_setup.py --restore
+```
+
+This queues the profile restore and requests a reboot. Actual preference/model changes happen at the next manager startup, before its processes are prepared. It refuses an onroad/unknown state and checks that the installed branch is `pacifica`. The command does not replace calibration, identity, credentials, or learned values. There is no new menu button in this release.
+
+For a read-only check of the profile state and the installed model hashes:
+
+```sh
+cd /data/openpilot
+python3 tools/pacifica_setup.py --status
+```
+
+A difference from the profile can be an intentional later adjustment, so the status command only reports it. Details, provenance, and automated verification commands are in [pacifica/README.md](https://github.com/aeae1/openpilot/blob/pacifica/pacifica/README.md).
 
 ## Lead marker and speed-display idea
 
@@ -258,7 +323,7 @@ In this branch, `selfdrive/car/chrysler/interface.py` sets **`radarUnavailable=T
 - Recover the source matching the prebuilt release before attempting UI changes. The default branch is not a substitute for that investigation.
 - Preserve the distinction between a named branch and a commit. This release contains branch-name-dependent behavior; an archive branch should not be assumed to behave identically if installed under its archive name.
 - Preserve working behavior when evaluating later models or controls. Model generations, lane planning, offsets, and UI implementations are coupled; a model swap is not automatically a drop-in upgrade.
-- The September 2026 work adds documentation and a model archive only. It does not change runtime code, seed preferences, install an update on a device, or add the proposed lead-speed UI.
+- September 2026 added the model archive and documentation, followed by the separate `pacifica` branch's installation support. The `release-c3` and `master` runtime files remain unchanged, and nothing was installed on my current device. The proposed lead-speed UI is still unimplemented.
 
 ## Attribution and license
 

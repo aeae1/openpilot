@@ -1,0 +1,35 @@
+name: Pacifica setup
+
+on:
+  push:
+    branches: [pacifica]
+  pull_request:
+    branches: [pacifica]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  setup-tests:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        python: ['3.8', '3.12']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Verify the actual bundled Blue Diamond files
+        run: python tools/pacifica_setup.py --verify-bundle
+      - name: Exercise clean installs, existing settings, and interrupted transactions
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python -m unittest discover -s selfdrive/manager/test -p test_pacifica_setup.py -v
+      - name: Check validation also works with Python optimization enabled
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python -O -m unittest discover -s selfdrive/manager/test -p test_pacifica_setup.py -q
