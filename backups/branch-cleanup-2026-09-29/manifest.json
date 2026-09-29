@@ -1,0 +1,619 @@
+{
+  "schema": 1,
+  "repository": "aeae1/openpilot",
+  "cleanup_id": "2026-09-29",
+  "source_default_branch": "master",
+  "source_master_commit": "c1f99871b34bd128b03aa407f221811a57037ba3",
+  "intent": "Remove unused branches from the active branch list while retaining their exact commits and histories under archive tags. Do not remove vehicle support, models, runtime files, existing release tags, or the four retained branches.",
+  "retained": [
+    {
+      "name": "backup/blue-diamond-v2-2026-09-28",
+      "sha": "70f4db9d01be4ceb3706c508484055f615e0fa0a"
+    },
+    {
+      "name": "master",
+      "sha": "c1f99871b34bd128b03aa407f221811a57037ba3"
+    },
+    {
+      "name": "pacifica",
+      "sha": "9afa1e6b0bf819993849bd19f0c2b55a0f2cac1c"
+    },
+    {
+      "name": "release-c3",
+      "sha": "c5903de158dd7707128b30cbaaccdde3a3b6b462"
+    }
+  ],
+  "candidates": [
+    {
+      "name": "0.8.12-prod-personal-hkg",
+      "sha": "f6eae7c50c9c4a96f3cdf5b8821a834b01103597",
+      "archive_tag": "archive/cleanup-2026-09-29/0.8.12-prod-personal-hkg",
+      "tree": "361ff76be40cf3874b10a7f6dc51b2b6b62df7a1",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2022-04-19T03:58:46Z",
+      "last_subject": "sunnypilot v0.8.12-4 update - hotfix 7",
+      "comparison_to_master": {
+        "status": "separate_history"
+      }
+    },
+    {
+      "name": "(!)README",
+      "sha": "1ea5ac984d368daf249373b85cb0cb3a8ae4e97f",
+      "archive_tag": "archive/cleanup-2026-09-29/(!)README",
+      "tree": "a1149152eb1cf9df02774eb63a1ce2c46c354727",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2024-02-22T00:21:00Z",
+      "last_subject": "Update HOW-TOS.md",
+      "comparison_to_master": {
+        "status": "separate_history"
+      }
+    },
+    {
+      "name": "camera-scc-long",
+      "sha": "369a1cf9462d2c67205997e6d56a939ad3c776b6",
+      "archive_tag": "archive/cleanup-2026-09-29/camera-scc-long",
+      "tree": "209eac48bc13643d2399cf60f3b0b15278b929d9",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2023-09-08T05:55:38Z",
+      "last_subject": "add fw for 2023",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 16,
+        "behind": 2152,
+        "merge_base": "7816edda57894c7967fcd931294a31d000e6508c"
+      }
+    },
+    {
+      "name": "ceed-long",
+      "sha": "b4259145fbcf9f8a3b6cbacc74f0636700b68a83",
+      "archive_tag": "archive/cleanup-2026-09-29/ceed-long",
+      "tree": "f19272e4f717b9511a639dba1507abfa74767e86",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2023-09-05T19:51:24Z",
+      "last_subject": "Hyundai longitudinal: enable for `KIA_CEED`",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 1,
+        "behind": 2197,
+        "merge_base": "e0eb4d726c1f645c3694425662ecb135aa000d79"
+      }
+    },
+    {
+      "name": "dev-c3-palisade-2023-hda2-long-prebuilt",
+      "sha": "ca97a739f0887801fbd4c04e8170255439d2a670",
+      "archive_tag": "archive/cleanup-2026-09-29/dev-c3-palisade-2023-hda2-long-prebuilt",
+      "tree": "0e9653db1749fa5925bab556e4ac9f845518503c",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2024-04-29T16:17:55Z",
+      "last_subject": "sunnypilot v2024.04.29-1662",
+      "comparison_to_master": {
+        "status": "separate_history"
+      }
+    },
+    {
+      "name": "dev-c3-rollback-test-prebuilt",
+      "sha": "ebecce0888db9efd02206ef7829a8722e744cc1d",
+      "archive_tag": "archive/cleanup-2026-09-29/dev-c3-rollback-test-prebuilt",
+      "tree": "1c7d72e7d5ea2da2691fe395fbc8fdb97fdd5560",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2024-02-27T22:04:50Z",
+      "last_subject": "sunnypilot v2024.02.27-1353",
+      "comparison_to_master": {
+        "status": "separate_history"
+      }
+    },
+    {
+      "name": "dev-c3",
+      "sha": "9f28d9bc441c940a1e5a87514773d9952097321f",
+      "archive_tag": "archive/cleanup-2026-09-29/dev-c3",
+      "tree": "40947ae49a28b0118f038b7f59fe812e6a8063da",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2024-04-30T20:59:54Z",
+      "last_subject": "sunnypilot v2024.04.30-1666",
+      "comparison_to_master": {
+        "status": "separate_history"
+      }
+    },
+    {
+      "name": "disable-on-screen-recorder-prebuilt",
+      "sha": "3aa213b4a42b9179681736510ddf1783aef68fcc",
+      "archive_tag": "archive/cleanup-2026-09-29/disable-on-screen-recorder-prebuilt",
+      "tree": "f7b28dc3a95bea0854122f07c2b63d1383f49d09",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2024-04-12T19:46:35Z",
+      "last_subject": "sunnypilot v2024.04.12-1605",
+      "comparison_to_master": {
+        "status": "separate_history"
+      }
+    },
+    {
+      "name": "elantra-2019-fw",
+      "sha": "96a5f2bcda23358f8ce16a3e1cc35fae102e8b29",
+      "archive_tag": "archive/cleanup-2026-09-29/elantra-2019-fw",
+      "tree": "d61e436aa130455601efe6a78d92d884fb751511",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2023-09-23T10:34:10Z",
+      "last_subject": "Update CARS.md",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 14,
+        "behind": 2016,
+        "merge_base": "f7f8b769efd0e7d144f6b19903a5a2a9d86c3772"
+      }
+    },
+    {
+      "name": "escc-interceptor-docs",
+      "sha": "0bbe217642e3e06d9530a36fe4be57a988af9f80",
+      "archive_tag": "archive/cleanup-2026-09-29/escc-interceptor-docs",
+      "tree": "c74fccfd6dd47d2e93671f38f7e5eb9d554bf65c",
+      "last_author": "DevTekVE",
+      "last_commit_date": "2024-03-21T18:13:03Z",
+      "last_subject": "images didn't push",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 2,
+        "behind": 547,
+        "merge_base": "5b5938dc3a0ddc668b57ad98896a38c7b14b480d"
+      }
+    },
+    {
+      "name": "forte-2023-fw",
+      "sha": "dab3ff6d3d4e0846a21d9d9b3b61c384efe3fb74",
+      "archive_tag": "archive/cleanup-2026-09-29/forte-2023-fw",
+      "tree": "daf4e3d052d3c79f3bd891ba3aeb4c3d3a417900",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2023-12-22T16:44:30Z",
+      "last_subject": "more fw",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 2,
+        "behind": 1464,
+        "merge_base": "ea7e701052f8da1fb562746c62bdb5a64410ea76"
+      }
+    },
+    {
+      "name": "g70-2023-port",
+      "sha": "ff6500cd0ff1dd903ee21f82ea24c3698009cc80",
+      "archive_tag": "archive/cleanup-2026-09-29/g70-2023-port",
+      "tree": "59a431ff240c99e08da9b005c350875ce91d0db3",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2023-12-16T06:09:48Z",
+      "last_subject": "bump model year",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 2,
+        "behind": 1464,
+        "merge_base": "ea7e701052f8da1fb562746c62bdb5a64410ea76"
+      }
+    },
+    {
+      "name": "genesis-g70-2024-port",
+      "sha": "b70b341d895b96a205446028f3d6642fb1ac3368",
+      "archive_tag": "archive/cleanup-2026-09-29/genesis-g70-2024-port",
+      "tree": "a35978e62701d8e78aa25de990a88b27ef0e68cd",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2024-02-29T16:19:02Z",
+      "last_subject": "Different tune",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 8,
+        "behind": 833,
+        "merge_base": "262b328ad706194425479b1a56af9321d1a0c97a"
+      }
+    },
+    {
+      "name": "gv70-2022-fw",
+      "sha": "2ef4a2977bf862923c4f2766cebda8c990db5134",
+      "archive_tag": "archive/cleanup-2026-09-29/gv70-2022-fw",
+      "tree": "dc2f98b358d344f5ad4d14041eb7ea08809ab06b",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2024-04-11T05:11:40Z",
+      "last_subject": "Skip assert",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 8,
+        "behind": 436,
+        "merge_base": "16bb4a9ccd1fe07d5a90aae719873e4bfc8e4d65"
+      }
+    },
+    {
+      "name": "gv70-2022-fw-2",
+      "sha": "21955513b8a9d40e090440ac5997dba0e6ce4605",
+      "archive_tag": "archive/cleanup-2026-09-29/gv70-2022-fw-2",
+      "tree": "8684655b9d7f95142a73369228d3de1f4537b916",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2024-04-10T15:43:24Z",
+      "last_subject": "HKG: Add FW versions for Genesis GV70 2022",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 1,
+        "behind": 436,
+        "merge_base": "16bb4a9ccd1fe07d5a90aae719873e4bfc8e4d65"
+      }
+    },
+    {
+      "name": "gv70-2024-fw",
+      "sha": "0d53fe32a433803fd892164370cbb30091ea8fa9",
+      "archive_tag": "archive/cleanup-2026-09-29/gv70-2024-fw",
+      "tree": "12b7efc785745f5133e70deaf7741fb0c5a5080d",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2023-12-20T01:55:01Z",
+      "last_subject": "HKG: Add FW versions for Genesis GV70 2024",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 1,
+        "behind": 1435,
+        "merge_base": "5f045176775c8c2cdd7f85e7229f78cf26f0c013"
+      }
+    },
+    {
+      "name": "gv80-2021-uae",
+      "sha": "fb4a9588841cf6f479773e2c18502ac2f32b9e07",
+      "archive_tag": "archive/cleanup-2026-09-29/gv80-2021-uae",
+      "tree": "6ae10b66fdc9becc185216fc0a64502167e8a081",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2023-12-16T05:40:08Z",
+      "last_subject": "only disable tx",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 12,
+        "behind": 1585,
+        "merge_base": "9bff8ccd0fa8f29d3fa92e4505d9cdd7a72d0f12"
+      }
+    },
+    {
+      "name": "hkg-canfd-camera-scc-non-hda2-long",
+      "sha": "356f9f89e8f3879bc1b7032f03476c97ff53fa05",
+      "archive_tag": "archive/cleanup-2026-09-29/hkg-canfd-camera-scc-non-hda2-long",
+      "tree": "a42db763cff6d605efe2e10736d01f5ce6f02196",
+      "last_author": "Shane Smiskol",
+      "last_commit_date": "2023-11-10T11:58:04Z",
+      "last_subject": "revert unrelated changes",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 10,
+        "behind": 1741,
+        "merge_base": "e94c3c556959112fbe0a465289eb5fec7f4ca63a"
+      }
+    },
+    {
+      "name": "hkg-canfd-radar-scc-long",
+      "sha": "8f23eb016ced277cb5cadc920b6c0a32f324fb1a",
+      "archive_tag": "archive/cleanup-2026-09-29/hkg-canfd-radar-scc-long",
+      "tree": "cd0bcf2104047110c64654d8b103829c0347caa1",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2023-09-29T13:09:54Z",
+      "last_subject": "only send tester present on radar based scc, openpilot longitudinal",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 7,
+        "behind": 1961,
+        "merge_base": "571ebf77fa81deef8adef6fca665e996395e3b43"
+      }
+    },
+    {
+      "name": "hkg-legacy-long",
+      "sha": "12032700c213d7e452aff5515adc3e0ee6b26c08",
+      "archive_tag": "archive/cleanup-2026-09-29/hkg-legacy-long",
+      "tree": "76b98bbab24cf3ee0b7fb43cb3b8a2548f030850",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2023-01-07T07:14:17Z",
+      "last_subject": "No longer faults!",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 4,
+        "behind": 4431,
+        "merge_base": "b74f2d102daa6acea69d0c673dbb0172f31897f3"
+      }
+    },
+    {
+      "name": "hkg-legacy-long-update",
+      "sha": "928d9e5bdda7c22a785ff5fe0ba3aae6bbf9d2ef",
+      "archive_tag": "archive/cleanup-2026-09-29/hkg-legacy-long-update",
+      "tree": "aed1a2842c7d6df1299a9bea1c44caf37f105579",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2023-08-15T04:43:23Z",
+      "last_subject": "Regenerate CARS.md",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 19,
+        "behind": 2517,
+        "merge_base": "3e2903a0c184a203718e2430aa33da6e3b62bf7f"
+      }
+    },
+    {
+      "name": "ioniq-6-2023-hda2-long",
+      "sha": "b2cf73a22635f7d4849d99120a980b30b41d5213",
+      "archive_tag": "archive/cleanup-2026-09-29/ioniq-6-2023-hda2-long",
+      "tree": "8d6e0e62fc208e5ad2ffe0750ef1a15dbf609192",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2023-08-27T00:43:51Z",
+      "last_subject": "hda2 long doesn't need to send 0x1CF",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 26,
+        "behind": 2286,
+        "merge_base": "57ad4f02f8e693639262aa3a982be8ed6c433ee0"
+      }
+    },
+    {
+      "name": "ioniq-6-hda2-long",
+      "sha": "3f0a0e9f8fc6fa8988b98c05595231c81face64d",
+      "archive_tag": "archive/cleanup-2026-09-29/ioniq-6-hda2-long",
+      "tree": "651e9a46686e1f98e0ba3d2a8a1d95a4d35fc5da",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2023-09-26T14:42:53Z",
+      "last_subject": "Merge remote-tracking branch 'commaai/openpilot/master' into ioniq-6-hda2-long",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 15,
+        "behind": 1981,
+        "merge_base": "61c5618f15a477d6aaa8dfaaf9803961db5081e6"
+      }
+    },
+    {
+      "name": "kia-niro-phev-2022-fw",
+      "sha": "0be43420c8fba0520339117091dc24d683b8d143",
+      "archive_tag": "archive/cleanup-2026-09-29/kia-niro-phev-2022-fw",
+      "tree": "5c5e4de8d15507e84d7ccdee69f1440739e09390",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2023-12-04T18:10:13Z",
+      "last_subject": "Merge remote-tracking branch 'commaai/openpilot/master' into kia-niro-phev-2022-fw",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 3,
+        "behind": 1623,
+        "merge_base": "ce4bac8218ebcc8d0480ed09e0c1c6467f705a65"
+      }
+    },
+    {
+      "name": "kia-sportage-phev-2023-port",
+      "sha": "42a8a6df98c4c25c49a7ceb21676640a6ab246a6",
+      "archive_tag": "archive/cleanup-2026-09-29/kia-sportage-phev-2023-port",
+      "tree": "eb03202d392bd9735b09131e5776b160bde804dc",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2023-12-08T05:58:53Z",
+      "last_subject": "this car does SCC from camera",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 4,
+        "behind": 1585,
+        "merge_base": "9bff8ccd0fa8f29d3fa92e4505d9cdd7a72d0f12"
+      }
+    },
+    {
+      "name": "kona-2022-port",
+      "sha": "de9ce03925639feeafba9e6f7834f67083c2bc9c",
+      "archive_tag": "archive/cleanup-2026-09-29/kona-2022-port",
+      "tree": "0f4c639c2fa957d5319a0d3c70d2c804fd20014c",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2024-02-16T16:18:06Z",
+      "last_subject": "Wrong platform!",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 14,
+        "behind": 930,
+        "merge_base": "5a441ec0c4bf39a5e066e307ee6c9a8b55f8d8b5"
+      }
+    },
+    {
+      "name": "kona-ev-long",
+      "sha": "c61e672e574ce2d683d5fd5be7cb8fa703add100",
+      "archive_tag": "archive/cleanup-2026-09-29/kona-ev-long",
+      "tree": "b6c3fdfa9100b52d0ddad78fdad779ddb800af48",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2023-09-05T19:50:21Z",
+      "last_subject": "Hyundai longitudinal: enable for `KONA_EV`",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 1,
+        "behind": 2197,
+        "merge_base": "e0eb4d726c1f645c3694425662ecb135aa000d79"
+      }
+    },
+    {
+      "name": "master-sync-op",
+      "sha": "0acc54adc4b403a1242deb0fb86f92b002f0e768",
+      "archive_tag": "archive/cleanup-2026-09-29/master-sync-op",
+      "tree": "3e1c28a73632d9076190e3c44b1d14ee4b6420e1",
+      "last_author": "DevTekVE",
+      "last_commit_date": "2024-02-06T17:36:24Z",
+      "last_subject": "Merge branch 'master' into master-sync-op",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 11,
+        "behind": 928,
+        "merge_base": "be15b31696af43accbffc8d59b3a5acbb4725682"
+      }
+    },
+    {
+      "name": "nexo-2021-port",
+      "sha": "8b25f9c5cbfbb29ef413721ff81f31fffe85a771",
+      "archive_tag": "archive/cleanup-2026-09-29/nexo-2021-port",
+      "tree": "15ff42848b4b9d22ac784e3ddf9bde8854d294e5",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2023-12-12T07:49:04Z",
+      "last_subject": "Merge remote-tracking branch 'commaai/openpilot/master' into nexo-2021-port",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 24,
+        "behind": 1537,
+        "merge_base": "b1ecfd55ce73062f297a5ea7d99d0c55d57c58ab"
+      }
+    },
+    {
+      "name": "nlp",
+      "sha": "c09aaa056bc9ed2761d753c16f5485bbcf96b94c",
+      "archive_tag": "archive/cleanup-2026-09-29/nlp",
+      "tree": "46a38cd5f8e0fc9f242bf684b2dc6d5b8c3e2346",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2023-10-29T14:00:54Z",
+      "last_subject": "changes",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 2,
+        "behind": 1587,
+        "merge_base": "4cfdd2b1198f5f211db130e0a7181d8543cfbde4"
+      }
+    },
+    {
+      "name": "palisade-2023-hda2-long",
+      "sha": "bf26c38397e7c74228d51c387d9d65e4c82165c1",
+      "archive_tag": "archive/cleanup-2026-09-29/palisade-2023-hda2-long",
+      "tree": "27e5e76154333dfc6584a97f4484c4ea3ba8548d",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2024-04-29T04:10:56Z",
+      "last_subject": "bump `steerActuatorDelay` for stock long",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 301,
+        "behind": 319,
+        "merge_base": "d56f188854135ff4d1cf2cb6bf184a8301a82edd"
+      }
+    },
+    {
+      "name": "palisade-2023-port-1",
+      "sha": "f1edfbef69f940be0a996904a566e89afe59f856",
+      "archive_tag": "archive/cleanup-2026-09-29/palisade-2023-port-1",
+      "tree": "eb66b45b9d30d441f7b20a93eed453452209448a",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2024-04-27T15:15:00Z",
+      "last_subject": "bump opendbc",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 189,
+        "behind": 319,
+        "merge_base": "d56f188854135ff4d1cf2cb6bf184a8301a82edd"
+      }
+    },
+    {
+      "name": "palisade-2023-port-2",
+      "sha": "935d6fad3c561bb97e2cb2363c7c20ba0e806d65",
+      "archive_tag": "archive/cleanup-2026-09-29/palisade-2023-port-2",
+      "tree": "e2246a97b228a9a0444e8f69473220f2ab52adaf",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2024-02-08T03:32:59Z",
+      "last_subject": "Add more FW versions",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 93,
+        "behind": 1702,
+        "merge_base": "fc8cfe128046e741d28b127bac03b7a691aa39f3"
+      }
+    },
+    {
+      "name": "release-c3-0.9.4.1",
+      "sha": "f8db16bb9528b4c2337bd22188848b8b8e465069",
+      "archive_tag": "archive/cleanup-2026-09-29/release-c3-0.9.4.1",
+      "tree": "51acd176219066aef2299a0cf37566e12b0cb11b",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2023-11-26T23:00:03Z",
+      "last_subject": "HOTFIX: Nissan sendcan format",
+      "comparison_to_master": {
+        "status": "separate_history"
+      }
+    },
+    {
+      "name": "staging-c3-wp",
+      "sha": "398458ebc88759fa14058eef09da6597b2bba73a",
+      "archive_tag": "archive/cleanup-2026-09-29/staging-c3-wp",
+      "tree": "4dc6ceece97fc13e8a07cec77e2153808780207f",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2023-12-23T21:54:25Z",
+      "last_subject": "Update interface.py",
+      "comparison_to_master": {
+        "status": "separate_history"
+      }
+    },
+    {
+      "name": "staging-c3",
+      "sha": "e4925277fc20f1d06fe0e37cc68ad4e3a0a76d0a",
+      "archive_tag": "archive/cleanup-2026-09-29/staging-c3",
+      "tree": "dc159f58d6fc13a2dab3a3c1b374e27bf8dc0b4b",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2024-04-11T06:07:16Z",
+      "last_subject": "sunnypilot v0.9.7.0",
+      "comparison_to_master": {
+        "status": "separate_history"
+      }
+    },
+    {
+      "name": "staria-2023-port",
+      "sha": "4d4cdf0c8eb9c0a8f201232cca0440894c874595",
+      "archive_tag": "archive/cleanup-2026-09-29/staria-2023-port",
+      "tree": "69865340eb16d78b8143b844bd30bd7450b9ac0b",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2023-12-12T07:35:50Z",
+      "last_subject": "Update RELEASES.md",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 5,
+        "behind": 1537,
+        "merge_base": "b1ecfd55ce73062f297a5ea7d99d0c55d57c58ab"
+      }
+    },
+    {
+      "name": "subaru-rpm-limit-increase-by-jack-amusedgrape-prebuilt",
+      "sha": "a000f60aed7217b817fd3c00c43d6ebb388d06a0",
+      "archive_tag": "archive/cleanup-2026-09-29/subaru-rpm-limit-increase-by-jack-amusedgrape-prebuilt",
+      "tree": "7ca998884e863d222e0c23e124f1a9b4babc0088",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2024-04-15T17:35:33Z",
+      "last_subject": "sunnypilot v2024.04.15-1634",
+      "comparison_to_master": {
+        "status": "separate_history"
+      }
+    },
+    {
+      "name": "test-c3-20221216",
+      "sha": "b051841899edbf5e9088e6b285da61b5baa3292a",
+      "archive_tag": "archive/cleanup-2026-09-29/test-c3-20221216",
+      "tree": "d0d9bc112f2123807632b182b3087b9b8e6abc28",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2022-12-16T23:23:35Z",
+      "last_subject": "sunnypilot v2022.12.16",
+      "comparison_to_master": {
+        "status": "separate_history"
+      }
+    },
+    {
+      "name": "test-c3-ng",
+      "sha": "e670d68e18db3ecae841c8ff2d534c5978321771",
+      "archive_tag": "archive/cleanup-2026-09-29/test-c3-ng",
+      "tree": "be4cc7e8b1509a55c36687fff2df10dc115d49bc",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2022-10-09T06:00:09Z",
+      "last_subject": "sunnypilot v2022.10.09",
+      "comparison_to_master": {
+        "status": "separate_history"
+      }
+    },
+    {
+      "name": "translation-tests-prebuilt",
+      "sha": "258c36b75e01490b1dbf6a021f5043c8e0c96b4f",
+      "archive_tag": "archive/cleanup-2026-09-29/translation-tests-prebuilt",
+      "tree": "082f9fbebc6c315ca719235589f43710c8f02838",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2024-04-09T17:43:25Z",
+      "last_subject": "sunnypilot v2024.04.09-1586",
+      "comparison_to_master": {
+        "status": "separate_history"
+      }
+    },
+    {
+      "name": "translations",
+      "sha": "c8298dd27c9c86ecae82c4f75e60e25b64b18268",
+      "archive_tag": "archive/cleanup-2026-09-29/translations",
+      "tree": "53ea3b39cbc769a472f380998e0b9c181a3bf4e2",
+      "last_author": "Jason Wen",
+      "last_commit_date": "2024-03-14T05:20:28Z",
+      "last_subject": "Translations: zh-CHS example (#305)",
+      "comparison_to_master": {
+        "status": "diverged",
+        "ahead": 2,
+        "behind": 547,
+        "merge_base": "5b5938dc3a0ddc668b57ad98896a38c7b14b480d"
+      }
+    }
+  ]
+}

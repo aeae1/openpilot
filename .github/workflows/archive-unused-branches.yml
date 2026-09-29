@@ -1,0 +1,29 @@
+name: Archive and remove audited unused branches
+
+on:
+  push:
+    branches: [master]
+    paths: ['backups/branch-cleanup-2026-09-29/manifest.json']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: aeae1-openpilot-branch-cleanup-2026-09-29
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    if: github.repository == 'aeae1/openpilot' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Verify cleanup guards before requesting any deletions
+        run: python3 -m unittest discover -s .github/scripts -p test_archive_unused_branches.py -v
+      - name: Archive every exact tip, then delete the audited branches atomically
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/archive_unused_branches.py
