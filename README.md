@@ -1,3 +1,5 @@
+![aeae1pilot: 2025 Pacifica Hybrid, with pencil lettering and a watercolor illustration](docs/assets/aeae1pilot-pacifica.png)
+
 # aeae1pilot: my sunnypilot setup
 
 This is my personal sunnypilot fork for my **2025 Chrysler Pacifica Hybrid and comma 3X**. I'm really happy with how it drives. I'm running **Blue Diamond v2**, a **Laneful** profile, and **NNLC**, with my camera mounted off to the side and the legacy **camera offset set to −20 cm**. I like the camera there, and I like the behavior I've ended up with.
